@@ -1,0 +1,87 @@
+<style>
+   
+</style>
+
+<footer class="footer-premium">
+    <div class="container">
+
+        <div class="text-center mb-4">
+            <span class="footer-brand"><i class="fas fa-hands-helping me-2" style="color: #ffc527;"></i>
+                {{constant('SITE_NOME')}}</span>
+            <p class="small opacity-75 mx-auto" style="max-width: 500px; line-height: 1.6;">Transformando realidades e
+                construindo futuros com transparência, amor e solidariedade.</p>
+        </div>
+
+        <ul class="footer-nav">
+            <li><a href="{{url('sobre-nos')}}" class="footer-link">Sobre nós</a></li>
+            <li><a href="{{url('transparencia')}}" class="footer-link">Transparência</a></li>
+            <li><a href="{{url('privacidade')}}" class="footer-link">Privacidade</a></li>
+            <li><a href="{{url('termos')}}" class="footer-link">Termos e Condições</a></li>
+
+            <li><a href="{{url('contato')}}" class="footer-link">Contato</a></li>
+
+            <li>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#contatoModal" class="footer-link">
+                    <i class="far fa-comment-alt me-1"></i> Fale Conosco
+                </a>
+            </li>
+        </ul>
+
+        <div class="footer-credits">
+            <span>&copy; 2023-{{ "now"|date("Y") }} {{constant('SITE_NOME')}}. Todos os direitos reservados.</span>
+            <span class="opacity-50" style="font-size: 0.75rem;">Executado em <b>{{tempoCarregamento()}}</b> segundos |
+                Desenvolvido por <a href="https://www.instagram.com/devmoraiis/" target="_blank">DevMorais</a></span>
+        </div>
+    </div>
+</footer>
+
+<div class="modal fade modal-premium" id="contatoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title"><i class="far fa-paper-plane me-2 text-warning"></i> Envie uma mensagem</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{flash()}}
+                <form class="formularioAjax" method="post" action="{{url('contato')}}" enctype="multipart/form-data">
+
+                    <div class="form-floating mb-3">
+                        <input type="text" name="nome" id="nome" class="form-control" placeholder="Nome">
+                        <label for="nome">Seu Nome Completo</label>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="E-mail">
+                        <label for="email">Seu melhor E-mail</label>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" name="assunto" id="assunto" class="form-control" placeholder="Assunto">
+                        <label for="assunto">Assunto da Mensagem</label>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <textarea name="mensagem" id="mensagem" style="height: 130px; resize: none;"
+                            class="form-control" placeholder="Mensagem"></textarea>
+                        <label for="mensagem">Como podemos ajudar?</label>
+                    </div>
+
+                    <div class="input-group mb-4">
+                        <label class="input-group-text" for="anexos"><i class="fas fa-paperclip"></i></label>
+                        <input type="file" name="anexos[]" multiple id="anexos" class="form-control"
+                            style="border-radius: 0 0.8rem 0.8rem 0;">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn-modal-submit">
+                            Enviar Mensagem <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

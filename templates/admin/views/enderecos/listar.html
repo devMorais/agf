@@ -1,0 +1,48 @@
+{% extends "dashboard.html" %}
+{% block conteudo %}  
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{url('admin/dashboard')}}">
+                Dashboard
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Endereços
+        </li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-md-6">
+        <form data-url-busca="{{ url('admin/buscar/cpf') }}" role="search">
+            <input type="search" name="busca" id="busca" class="form-control form-control-dark text-bg-light" placeholder="Buscar código do usuário por CPF:" aria-label="Search">
+        </form> 
+    </div>
+    <div class="col-md-6">
+        <span id="resultadoBuscarCpf" style="font-size: 0.9em; color: #333; text-transform: lowercase; opacity: 0.6;"></span>
+    </div>
+</div>
+<hr>
+{{ flash() }}
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="tabelaEnderecos" url="{{url()}}" class="table table-sm table-hover table-striped table-bordered border-dark" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Usuário:</th>
+                        <th>Cep:</th>
+                        <th>Endereco:</th>
+                        <th>Bairro</th>
+                        <th>Cidade:</th>
+                        <th>Estado:</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>    
+    </div>
+    <a href="{{url('admin/enderecos/cadastrar')}}" class="btn btn-dark" tooltip="tooltip" title="Cadastrar endereço">
+        Cadastrar
+    </a>
+</div>
+{% endblock %}

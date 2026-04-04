@@ -1,0 +1,30 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="meusDados" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasRightLabel">Seja bem vindo(a), {{usuario().nome | upper }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-group">
+            <li class="list-group-item border-0">
+                <span class="fw-bold {% if usuario.nome %}text-success{% else %}text-danger{% endif %}">Nome:</span>
+                <span class="ms-2">{{usuario().nome | upper}}</span>
+            </li>
+            <li class="list-group-item border-0">
+                <span class="fw-bold {% if usuario.email %}text-success{% else %}text-danger{% endif %}">E-mail:</span>
+                <span class="ms-2">{{usuario().email}}</span>
+            </li>
+            <li class="list-group-item border-0">
+                <span class="fw-bold {% if usuario.cpf %}text-success{% else %}text-danger{% endif %}">CPF:</span>
+                <span class="ms-2">{{usuario().cpf}}</span>
+            </li>
+            <li class="list-group-item border-0">
+                <span class="fw-bold {% if usuario.nascimento %}text-success{% else %}text-danger{% endif %}">Data de Nascimento:</span>
+                <span class="ms-2">{{usuario().nascimento}}</span>
+            </li>
+            <li class="list-group-item border-0">
+                <span class="fw-bold {% if usuario.telefone %}text-success{% else %}text-danger{% endif %}">Telefone:</span>
+                <span class="ms-2">{{usuario().telefone}}</span>
+            </li>
+        </ul>
+    </div>
+</div>

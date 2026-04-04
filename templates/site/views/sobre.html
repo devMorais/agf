@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+  
+</style>
+
+<div class="sobre-hero">
+    <div class="container text-center">
+        <span class="badge text-uppercase tracking-wide mb-3"
+            style="background: rgba(237,88,63,0.1); color: var(--cor-laranja); padding: 0.6rem 1rem;">
+            Nossa Missão
+        </span>
+        <h1 class="display-4 fw-bold mb-3 text-dark">
+            Construindo um <span class="text-gradient">futuro melhor</span> para todos.
+        </h1>
+        <p class="lead text-muted mx-auto" style="max-width: 700px; font-size: 1.25rem;">
+            A Associação Grande Família é uma organização dedicada a transformar realidades através do acolhimento,
+            educação e combate à pobreza.
+        </p>
+    </div>
+</div>
+
+<div class="container mb-5 my-5">
+
+    <div class="row mb-5 justify-content-center">
+        <div class="col-lg-11">
+            <div class="founder-card row g-0">
+                <div class="col-md-5">
+                    <img src="{{url('templates/site/assets/img/presidente.jpg')}}" alt="Rosival de Souza Morais"
+                        class="president-photo">
+                </div>
+                <div class="col-md-7 d-flex flex-column justify-content-center p-4 p-lg-5">
+                    <img src="{{url('templates/site/assets/img/LOGO.png')}}" alt="Logo" class="img-fluid mb-4"
+                        style="max-width: 150px; opacity: 0.9;">
+                    <h3 class="fw-bold mb-2">Rosival de Souza Morais</h3>
+                    <p class="text-uppercase text-muted fw-bold small tracking-wide mb-4"
+                        style="color: var(--cor-amarelo) !important;">Presidente Fundador</p>
+
+                    <blockquote class="blockquote mb-4"
+                        style="border-left: 4px solid var(--cor-amarelo); padding-left: 1rem; font-style: italic; color: #4a5568;">
+                        "Nós acreditamos que não basta apenas entregar uma cesta básica. É preciso oferecer a mão,
+                        estruturar a educação e dar a esperança necessária para que cada família construa seu próprio
+                        futuro com dignidade."
+                    </blockquote>
+
+                    <p class="text-muted mb-0">
+                        Fundada em <strong>25 de agosto de 2023</strong> na cidade de Planaltina-GO, nossa organização
+                        civil sem fins lucrativos nasceu do sonho de estender uma rede de apoio sólida e humana por todo
+                        o território nacional, atuando com total transparência e sem discriminação.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5 justify-content-center">
+        <div class="col-lg-5">
+            <div class="card-institucional">
+                <div class="icon-box">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3 class="fw-bold mb-3 text-dark">Nosso Foco Maior</h3>
+                <p class="text-muted mb-0" style="line-height: 1.8;">
+                    Visamos promover o bem-estar social e econômico de forma integral. Nossas ações incluem assistência
+                    técnica, fomento à cultura, preservação do meio ambiente, cuidados com a saúde e o combate
+                    implacável à pobreza.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card-institucional">
+                <div class="icon-box" style="background: rgba(237,88,63,0.15);">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3 class="fw-bold mb-3 text-dark">Nossos Valores</h3>
+                <p class="text-muted mb-0" style="line-height: 1.8;">
+                    Pautamo-nos pela <strong>ética, solidariedade e transparência</strong>. Não fazemos distinções
+                    raciais, sociais ou religiosas. Acreditamos no potencial humano e na força do trabalho coletivo para
+                    superar qualquer vulnerabilidade.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <h3 class="fw-bold mb-4 text-center text-dark">Como transformamos intenção em ação:</h3>
+            <ul class="list-custom">
+                <li>
+                    <i class="fas fa-home"></i>
+                    <span><strong>Infraestrutura:</strong> Adquirimos e estruturamos instalações físicas e tecnológicas
+                        adequadas para realizar a armazenagem e distribuição segura de recursos.</span>
+                </li>
+                <li>
+                    <i class="fas fa-handshake"></i>
+                    <span><strong>Parcerias Sociais:</strong> Promovemos concursos, feiras, eventos e cursos de
+                        capacitação técnica, criando pontes e melhores condições de trabalho para a comunidade.</span>
+                </li>
+                <li>
+                    <i class="fas fa-network-wired"></i>
+                    <span><strong>Rede de Apoio:</strong> Afiliamo-nos a entidades congêneres em nível municipal,
+                        estadual e nacional, fortalecendo nossa capacidade de resposta social sem perder nossa
+                        essência.</span>
+                </li>
+                <li>
+                    <i class="fas fa-bullhorn"></i>
+                    <span><strong>Conscientização:</strong> Divulgamos nosso trabalho ativamente em eventos de
+                        solidariedade, buscando atrair novos parceiros e voluntários engajados com a nossa causa.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="cta-section">
+                <h2 class="fw-bold mb-3">Faça parte dessa Grande Família</h2>
+                <p class="lead mb-4 opacity-75">Sua contribuição permite que nossos projetos continuem alcançando quem
+                    mais precisa. Juntos, podemos mudar o mundo de alguém hoje.</p>
+                <a href="{{url('doar')}}" class="btn btn-white shadow-sm text-decoration-none">
+                    <i class="fas fa-heart me-2"></i> Quero Fazer uma Doação
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

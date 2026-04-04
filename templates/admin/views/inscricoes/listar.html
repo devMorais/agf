@@ -1,0 +1,61 @@
+
+{% extends "dashboard.html" %}
+{% block conteudo %}  
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{url('admin/dashboard')}}">
+                Dashboard
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Inscrições:
+        </li>
+    </ol>
+</nav>
+{{ flash() }}
+<div class="row">
+    <div class="col-md-6">
+        <form data-url-busca="{{ url('admin/buscar/cpf') }}" role="search">
+            <input type="search" name="busca" id="busca" class="form-control form-control-dark text-bg-light" placeholder="Buscar código do usuário por CPF:" aria-label="Search">
+        </form> 
+    </div>
+    <div class="col-md-6">
+        <span id="resultadoBuscarCpf" style="font-size: 0.9em; color: #333; text-transform: lowercase; opacity: 0.6;"></span>
+    </div>
+</div>
+<hr>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="table-responsive">
+                <table id="tabelaInscricao" url="{{url()}}" class="table table-sm table-hover table-striped table-bordered border-dark" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nº:</th>
+                            <th>Projeto:</th>
+                            <th>Usuário:</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>    
+        </div>
+    </div>
+    <a href="{{url('admin/inscricoes/cadastrar')}}" class="btn btn-dark">
+        Cadastrar
+    </a>
+</div>    
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

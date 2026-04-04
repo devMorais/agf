@@ -1,0 +1,62 @@
+<form class="formularioAjax" action="{{url('completar/cadastro/'~usuario.id)}}" method="post">
+    <div class="mb-3">
+        <label for="texto" class="form-label">Por favor, forneça as seguintes informações:</label>
+        <textarea name="texto" class="form-control" rows="5" placeholder="Renda mensal familiar e número de pessoas na família">{{usuario.informacoes}}</textarea>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <input type="text" name="telefone" value="{{usuario.telefone}}" id="telefone" class="form-control" placeholder="Telefone">
+                <label for="telefone">Telefone: (formato: xxxxxxxxxxx)</label>
+            </div> 
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <input type="date" name="nascimento" value="{% if usuario.nascimento %}{{ usuario.nascimento|date('Y-m-d') }}{% endif %}" id="nascimento" class="form-control" placeholder="Nascimento">
+                <label for="nascimento">Nascimento:</label>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="form-floating">
+            <input type="text" name="cep" value="{{end.cep}}" id="cep" class="form-control" placeholder="CEP">
+            <label for="cep">CEP</label>
+            <small style="font-size: smaller; color: gray;">Se você não sabe seu CEP, <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank">clique aqui</a> para consultar.</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <input type="text" name="endereco" value="{{end.endereco}}" id="endereco" class="form-control" placeholder="Endereço">
+                <label for="endereco">Endereço:</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <input type="text" name="bairro" value="{{end.bairro}}" id="bairro" class="form-control" placeholder="Bairro">
+                <label for="bairro">Bairro:</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <input type="text" name="cidade" value="{{end.cidade}}"  id="cidade" class="form-control" placeholder="Cidade">
+                <label for="cidade">Cidade:</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-floating mb-3">
+                <select name="estado" id="estado" class="form-control">
+                    <option value="" disabled selected>Selecione o estado</option>
+                    <option value="GO" {% if end.estado == 'GO' %}selected{%endif%}>Goiás</option>
+                    <option value="DF" {% if end.estado == 'DF' %}selected{%endif%}>Distrito Federal</option>
+                </select>
+                <label for="estado">Estado:</label>
+            </div>
+        </div>
+    </div>
+    <div class="d-grid gap-2">
+        <input type="submit" class="btn btn-dark" value="Cadastrar">
+    </div>
+</form>

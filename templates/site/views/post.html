@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+   
+</style>
+
+<div class="container my-5 pt-3">
+    {{flash()}}
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <article class="post-card reveal">
+
+                {% if post.capa %}
+                <div class="post-cover-wrapper">
+                    <a data-fancybox data-caption="{{post.titulo}}" href="{{url('uploads/imagens/'~post.capa)}}">
+                        <img src="{{url('uploads/imagens/'~post.capa)}}" alt="{{post.titulo}}" title="{{post.titulo}}"
+                            class="post-cover" />
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="post-content-wrapper">
+
+                    <div class="post-header-top">
+                        <span class="badge-categoria">{{post.categoria.titulo}}</span>
+
+                        {% if usuario().level == 3 %}
+                        <div class="admin-controls">
+                            <a href="{{ url('admin/posts/editar/'~post.id) }}" class="btn-admin me-2" tooltip="tooltip"
+                                title="Editar Post">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <a href="{{ url('admin/posts/deletar/'~post.id) }}" class="btn-admin text-danger"
+                                tooltip="tooltip" title="Deletar Post">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="post-title">{{post.titulo}}</h1>
+
+                    <div class="post-meta-box">
+                        <div class="meta-item">
+                            <i class="fas fa-user-edit"></i>
+                            <span><strong>Autor:</strong> {{post.usuario.nome}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="far fa-calendar-check"></i>
+                            <span>{{ post.cadastrado_em|date("d/m/Y") }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>{{ post.cadastrado_em|date("H:i") }}</span>
+                        </div>
+                    </div>
+
+                    <div class="post-body">
+                        {{post.texto | raw}}
+                    </div>
+
+                    {% if post.categoria_id == 1 %}
+                    <div class="mt-5 text-center border-top pt-5">
+                        <h4 class="fw-bold mb-3">Gostou deste projeto? Faça parte!</h4>
+
+                        {% if not usuario() %}
+                        <button type="button" class="btn-action-lg" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">
+                            <i class="fas fa-hand-holding-heart me-2 text-white"></i> Quero me inscrever
+                        </button>
+                        {% endif %}
+
+                        {% if usuario().level == 1 %}
+                        <a href="{{url('inscricoes/'~post.id)}}" class="btn-action-lg text-decoration-none">
+                            <i class="fas fa-hand-holding-heart me-2 text-white"></i> Quero me inscrever
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                </div>
+            </article>
+        </div>
+
+        <div class="col-lg-4 reveal delay-1">
+            {% include 'sidebar.html' %}
+        </div>
+
+    </div>
+</div>
+
+{% include 'modals/inscricao.html' %}
+{% endblock %}

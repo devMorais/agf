@@ -1,0 +1,31 @@
+<form class="formularioAjax" action="{{ url('saas/enderecos/editar/'~end.id) }}" method="POST">
+    <div class="form-floating mb-3">
+        <input type="text" name="cep" value="{{end.cep}}" id="cep" class="form-control" placeholder="cep">
+        <label for="cep">CEP</label>
+        <p>Se você não sabe seu CEP, <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank">clique aqui</a> para consultar.</p>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="text" name="endereco" value="{{end.endereco}}" id="endereco" class="form-control" placeholder="endereco">
+        <label for="endereco">Endereço:</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" name="bairro" value="{{end.bairro}}" id="bairro" class="form-control" placeholder="bairro">
+        <label for="bairro">Bairro:</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input type="text" name="cidade" value="{{end.cidade}}"  id="cidade" class="form-control" placeholder="cidade">
+        <label for="cidade">Cidade:</label>
+    </div>
+    <div class="form-floating mb-3">
+        <select name="estado" id="estado" class="form-control">
+            <option value="" disabled selected>Selecione o estado</option>
+            <option value="GO" {% if end.estado == 'GO' %}selected{%endif%}>Goiás</option>
+            <option value="DF" {% if end.estado == 'DF' %}selected{%endif%}>Distrito Federal</option>
+        </select>
+        <label for="estado">Estado:</label>
+    </div>
+    <div class="d-grid gap-2">
+        <input type="submit" class="btn btn-dark" value="Editar">
+    </div>
+</form>

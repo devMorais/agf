@@ -1,0 +1,72 @@
+{% extends "dashboard.html" %}
+{% block conteudo %}  
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{url('admin/dashboard')}}">
+                Dashboard
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Endereços
+        </li>
+    </ol>
+</nav>
+{% if not id %}
+<div class="row">
+    <div class="col-md-6">
+        <form data-url-busca="{{ url('admin/buscar/cpf') }}" role="search">
+            <input type="search" name="busca" id="busca" class="form-control form-control-dark text-bg-light" placeholder="Buscar código do usuário por CPF:" aria-label="Search">
+        </form> 
+    </div>
+    <div class="col-md-6">
+        <span id="resultadoBuscarCpf" style="font-size: 0.9em; color: #333; text-transform: lowercase; opacity: 0.6;"></span>
+    </div>
+</div>
+<hr>
+{% endif %}
+<div class="card border-0 shadow-sm my-4">
+    <div class="card-body">
+        <form class="formularioAjax" action="{% if endereco.id %}{{url('admin/enderecos/editar/'~endereco.id)}}{% else %}{{url('admin/enderecos/cadastrar')}}{% endif %}" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="usuario_id" value="{{id}}" id="usuario_id" class="form-control" placeholder="endereco" readonly>
+                        <label for="usuario_id ">Códido do usuário:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="cep" value="{{endereco.cep}}" id="cep" class="form-control" placeholder="cep">
+                        <label for="cep">CEP:</label>
+                        <small style="font-size: smaller; color: gray;">Se você não sabe seu CEP, <a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank">clique aqui</a> para consultar.</small>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="endereco" value="{{endereco.endereco}}" id="endereco" class="form-control" placeholder="endereco">
+                        <label for="endereco">Endereço:</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="bairro" value="{{endereco.bairro}}" id="bairro" class="form-control" placeholder="bairro">
+                        <label for="bairro">Bairro:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="cidade" value="{{endereco.cidade}}"  id="cidade" class="form-control" placeholder="cidade">
+                        <label for="cidade">Cidade:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select name="estado" id="estado" class="form-control">
+                            <option value="" disabled selected>Selecione o estado</option>
+                            <option value="GO" {% if endereco.estado == 'GO' %}selected{%endif%}>Goiás</option>
+                            <option value="DF" {% if endereco.estado == 'DF' %}selected{%endif%}>Distrito Federal</option>
+                        </select>
+                        <label for="estado">Estado:</label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid gap-2">
+                <input type="submit" class="btn btn-dark" value="{% if endereco.id %}Atualizar{% else %}Cadastrar{% endif %}">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

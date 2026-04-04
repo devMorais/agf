@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+   
+</style>
+
+<div class="hero-premium">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6 hero-text-side">
+                <div class="reveal">
+                    <span class="trust-badge">
+                        <i class="fas fa-shield-alt me-2"></i> ONG Transparente e Confiável
+                    </span>
+                </div>
+
+                <h1 class="hero-title reveal delay-1">
+                    Sua ajuda <span class="text-gradient">transforma</span> realidades e constrói futuros.
+                </h1>
+
+                <p class="hero-subtitle reveal delay-2">
+                    Somos o motor que leva alimentos, educação e saúde para as famílias da nossa comunidade, realizando
+                    sonhos todos os dias.
+                </p>
+
+                <div
+                    class="d-flex gap-4 justify-content-center justify-content-lg-start align-items-center reveal delay-3">
+                    <a href="{{url('doar')}}" class="btn-premium-lg text-decoration-none">
+                        <i class="fas fa-heart me-2"></i> Apoiar Agora
+                    </a>
+                    <a href="{{url('sobre-nos')}}" class="link-animated">
+                        Saiba mais <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 hero-carousel-side reveal delay-4">
+                <div id="slide" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        {% for slide in posts.slides %}
+                        <button type="button" data-bs-target="#slide" data-bs-slide-to="{{loop.index0}}" {% if
+                            loop.index0==0 %}class="active" {%endif%} aria-current="true"
+                            aria-label="{{slide.titulo}}"></button>
+                        {% endfor %}
+                    </div>
+
+                    <div class="carousel-inner">
+                        {% for slide in posts.slides %}
+                        <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                            <a href="{{url('post/'~slide.categoria.slug~'/'~slide.slug)}}">
+                                {% if slide.capa %}
+                                <img src="{{url('uploads/imagens/'~slide.capa)}}" alt="{{slide.titulo}}">
+                                {% endif %}
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#slide" data-bs-slide="prev"
+                        style="width: 10%;">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow"
+                            style="width: 45px; height: 45px; opacity: 0.9;">
+                            <i class="fas fa-chevron-left text-dark fs-5"></i>
+                        </div>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#slide" data-bs-slide="next"
+                        style="width: 10%;">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow"
+                            style="width: 45px; height: 45px; opacity: 0.9;">
+                            <i class="fas fa-chevron-right text-dark fs-5"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 pt-4">
+    {{flash()}}
+
+    <div class="row g-5">
+
+        <div class="col-lg-8">
+            <h2 class="section-title reveal">Últimas Ações & Notícias</h2>
+
+            {% if posts %}
+            <div class="row g-4">
+                {% for post in posts.posts %}
+                <div class="col-md-6 reveal delay-{{ loop.index }}">
+                    <div class="card-post">
+                        {% if post.capa %}
+                        <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}">
+                            <img src="{{url('uploads/imagens/thumbs/'~post.capa)}}" alt="{{post.titulo}}"
+                                class="capa-post" />
+                        </a>
+                        {% endif %}
+
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="mb-3">
+                                <span class="badge-categoria">{{post.categoria.titulo}}</span>
+                            </div>
+
+                            <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}" class="text-decoration-none">
+                                <h5 class="fw-bold text-dark mb-3 lh-base">{{post.titulo}}</h5>
+                            </a>
+
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
+                                {{resumirTexto(post.texto, 130)}}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                                <small class="text-muted fw-medium">
+                                    <i class="far fa-clock text-warning me-1"></i> {{ contarTempo(post.cadastrado_em) }}
+                                </small>
+
+                                <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}"
+                                    class="fw-bold text-dark text-decoration-none small link-animated p-0">
+                                    Ler mais <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning rounded-4 shadow-sm border-0 reveal" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> Nenhuma postagem cadastrada para exibir!
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4 reveal delay-2">
+
+            <div class="mb-4">
+                {% include 'sidebar.html' %}
+            </div>
+
+            <div class="card-sidebar card">
+                <div class="ranking-header">
+                    <i class="fas fa-trophy text-warning me-2"></i> Em Destaque
+                </div>
+                <div class="card-body p-0">
+                    {% if posts.maisLidos %}
+                    {% for post in posts.maisLidos %}
+                    <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}" class="ranking-item">
+                        <div class="ranking-number">
+                            {{loop.index}}
+                        </div>
+                        <div class="ranking-content">
+                            <p class="ranking-title mb-0">{{post.titulo}}</p>
+                            <small class="text-muted">Confira os detalhes</small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-folder-open fs-2 mb-2 opacity-30"></i>
+                        <p class="mb-0 fw-bold">Sem destaques no momento.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% include 'modals/inscricao.html' %}
+{% endblock %}

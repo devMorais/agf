@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<div class="error-wrapper">
+    <div class="error-card reveal">
+
+        <i class="fas fa-map-signs error-icon reveal delay-1"></i>
+
+        <h1 class="error-code reveal delay-1">404</h1>
+
+        <h3 class="error-title reveal delay-2">Oops! Parece que nos perdemos.</h3>
+
+        <p class="error-text reveal delay-2">
+            A página que você está procurando não existe, foi movida ou está temporariamente indisponível. Vamos voltar
+            para um lugar seguro?
+        </p>
+
+        <a href="{{url()}}" class="btn-action-lg reveal delay-2">
+            <i class="fas fa-arrow-left me-2"></i> Voltar para a Home
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

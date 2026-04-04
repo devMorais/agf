@@ -1,0 +1,51 @@
+<style>
+    /* DESIGN SISTEMA PREMIUM - CABEÇALHO MINIMALISTA (CADASTRO/LOGIN) */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
+    .header-minimal {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border-bottom: 3px solid rgba(237, 88, 63, 0.1);
+        /* Linha sutil laranja */
+        padding: 1.5rem 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    .header-minimal a {
+        color: #111827;
+        /* Cinza escuro elegante */
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.8rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+        letter-spacing: -0.5px;
+    }
+
+    .header-minimal a:hover {
+        transform: translateY(-2px);
+    }
+
+    .header-minimal i {
+        color: #ffc527;
+        /* Amarelo da marca */
+        background: linear-gradient(135deg, #ed583f 0%, #ffc527 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 0.8rem;
+        font-size: 2.2rem;
+    }
+</style>
+
+<header class="header-minimal">
+    <div class="container text-center">
+        <a href="{{url()}}" title="{{constant('SITE_NOME')}}">
+            <i class="fas fa-hands-helping"></i>
+            {{constant('SITE_NOME')}}
+        </a>
+    </div>
+</header>

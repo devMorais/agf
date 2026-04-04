@@ -1,0 +1,14 @@
+<!-- Modal Completar Cadastro -->
+<div class="modal fade" id="completarCadastro" tabindex="-1" aria-labelledby="completarCadastroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl"> <!-- Usando a classe modal-xl para um modal ainda maior -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="completarCadastroLabel">Completar Cadastro</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 600px; overflow-y: auto;"> <!-- Ajustando a altura máxima conforme necessário -->
+                {% include 'formularios/completarCadastro.html' %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,190 @@
+{% extends "dashboard.html" %}
+{% block conteudo %}
+<div class="container my-5">
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h4 class="card-title text-primary"><i class="bi bi-journal-text me-2"></i>História da família</h4>
+            <hr>
+            <p class="card-text text-muted">{{ usuarios.texto | striptags }}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+            <h4 class="card-title text-primary mb-3"><i class="bi bi-person-badge-fill me-2"></i>Informações Pessoais
+            </h4>
+            <hr>
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Nome:</strong> <span>{{ usuarios.nome|upper }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>E-mail:</strong> <span>{{ usuarios.email }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>CPF:</strong> <span>{{ usuarios.cpf }}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Data de Nascimento:</strong> <span>{{ usuarios.nascimento|date("d/m/Y") }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Telefone:</strong> <span>{{ usuarios.telefone }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3"><i class="bi bi-images me-2"></i>Galeria</h5>
+                    <hr>
+                    {% if arquivos and arquivos | length > 0 %}
+                    <div id="fotosCarousel" class="carousel slide carousel-fade shadow-sm rounded overflow-hidden"
+                        data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            {% for arquivo in arquivos %}
+                            <button type="button" data-bs-target="#fotosCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                                {% if loop.index0==0 %}class="active" aria-current="true" {% endif %}
+                                aria-label="Foto {{ loop.index }}">
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-inner">
+                            {% for arquivo in arquivos %}
+                            <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                                <a href="{{ url(arquivo.imagem) }}" data-fancybox="gallery"
+                                    data-caption="Foto do Usuário">
+                                    <img src="{{ url(arquivo.imagem) }}" class="d-block w-100" alt="Foto do Usuário"
+                                        style="object-fit: cover; height: 350px;">
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#fotosCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#fotosCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Próximo</span>
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-camera mb-2 fs-2 d-block"></i>
+                        Nenhuma foto cadastrada.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3"><i class="bi bi-youtube me-2"></i>Vídeo de Apresentação
+                    </h5>
+                    <hr>
+                    {% set video_url = usuarios.url_video is defined and usuarios.url_video|length > 0 ?
+                    usuarios.url_video : null %}
+                    {% set embed_url = null %}
+
+                    {% if video_url is not null %}
+                    {% set video_id = null %}
+                    {# Extrai o ID para o formato 'https://www.youtube.com/watch?v=VIDEO_ID' #}
+                    {% if 'watch?v=' in video_url %}
+                    {% set video_id = video_url|split('v=')|last|split('&')|first %}
+                    {# Extrai o ID para o formato 'https://youtu.be/VIDEO_ID' #}
+                    {% elseif 'youtu.be/' in video_url %}
+                    {% set video_id = video_url|split('youtu.be/')|last|split('?')[0] %}
+                    {% endif %}
+
+                    {% if video_id %}
+                    {% set embed_url = 'https://www.youtube.com/embed/' ~ video_id %}
+                    {% endif %}
+                    {% endif %}
+
+                    {% if embed_url %}
+                    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                        <iframe src="{{ embed_url }}" title="Vídeo do Usuário"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-play-btn mb-2 fs-2 d-block"></i>
+                        {% if video_url %}
+                        <p>URL inválida ou não suportada.</p>
+                        <a href="{{ video_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Tentar abrir
+                            link externo</a>
+                        {% else %}
+                        Nenhum vídeo cadastrado.
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+            <h4 class="card-title text-primary mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Endereço</h4>
+            <hr>
+
+            {% if enderecos %}
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>CEP:</strong> <span>{{ enderecos.cep|upper }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Endereço:</strong> <span>{{ enderecos.endereco }}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Bairro:</strong> <span>{{ enderecos.bairro }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Cidade:</strong> <span>{{ enderecos.cidade }}</span>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 d-flex justify-content-between">
+                            <strong>Estado:</strong> <span>{{ enderecos.estado }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-map fs-2 d-block mb-2"></i>
+                <p class="mb-0">Nenhum endereço cadastrado para este usuário.</p>
+                <a href="{{ url('admin/enderecos/cadastrar/' ~ usuarios.id) }}"
+                    class="btn btn-sm btn-outline-primary mt-3">
+                    <i class="bi bi-plus-lg"></i> Cadastrar Endereço
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

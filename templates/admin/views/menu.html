@@ -1,0 +1,20 @@
+<input type="checkbox" id="menu">
+<div class="sidebar">
+    <div class="sidebarLogo">
+        <a href="{{url('admin/dashboard')}}">
+            <div class="logo">
+                <img src="{{ url('templates/site/assets/img/LOGO.png') }}" alt=" {{constant('SITE_NOME')}}" />
+            </div>
+        </a>
+    </div>
+    <div class="sidebarMenu my-3">
+        <ul class="lead">
+            <li>
+                <a href="{{url('admin/usuarios/listar')}}">
+                    <i class="fas fa-users"></i>
+                    <span>Usuários:</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

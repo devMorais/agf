@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+    <main>
+        {% block conteudo %}
+        <h5 class="mb-3">Dashboard <small class="saudacao text-muted"> - {{saudacao()}}, {{usuario().nome}}. Seu último
+                login foi em {{usuario().ultimo_login |date('d/m/Y')}} às {{usuario().ultimo_login
+                |date('H:i')}}</small></h5>
+        {{ flash() }}
+
+        {% endblock %}
+    </main>
+    {% include 'rodape.html' %}
+</div>
+{% endblock %}

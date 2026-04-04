@@ -1,0 +1,106 @@
+<style>
+  
+</style>
+
+<header class="header-premium sticky-top">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between py-2">
+
+            <ul class="nav col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto align-items-center justify-content-center">
+                <li class="nav-item me-3">
+                    <a href="{{url('doar')}}" class="btn-doar-nav text-decoration-none">
+                        <i class="fa-solid fa-heart me-2"></i> DOAR
+                    </a>
+                </li>
+
+                <li class="nav-item me-2">
+                    <a href="{{url()}}" class="nav-link-premium text-decoration-none">
+                        <i class="fa-solid fa-house me-2"></i> Home
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link-premium dropdown-toggle text-decoration-none" href="#" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-layer-group me-2"></i> Categorias
+                    </a>
+                    {% if categorias %}
+                    <ul class="dropdown-menu dropdown-menu-premium">
+                        {% for categoria in categorias %}
+                        <li>
+                            <a class="dropdown-item" href="{{url('categoria/'~categoria.slug)}}" tooltip="tooltip"
+                                title="{{categoria.titulo}}">
+                                {{categoria.titulo}}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </li>
+            </ul>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-center gap-3">
+                <form data-url-busca="{{ url('buscar') }}" class="mb-3 mb-lg-0" role="search"
+                    style="position: relative;">
+                    <i class="fas fa-search position-absolute text-muted"
+                        style="top: 50%; left: 15px; transform: translateY(-50%); pointer-events: none;"></i>
+                    <input type="search" name="busca" id="busca" class="form-control search-premium"
+                        placeholder="Buscar no site..." aria-label="Search" style="padding-left: 2.5rem !important;">
+                </form>
+
+                <div class="text-end">
+                    {% if usuario().level == 3 %}
+                    <div class="dropdown">
+                        <button type="button" class="btn-user-filled dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="fa-solid fa-user-shield me-2 text-primary"></i> {{usuario().nome | upper}}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-premium dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{url('admin/dashboard/')}}"><i
+                                        class="fas fa-chart-line me-2 w-20px"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/usuarios/editar/'~usuario().id)}}"><i
+                                        class="fas fa-user-cog me-2 w-20px"></i> Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="{{url('admin/sair')}}"><i
+                                        class="fas fa-sign-out-alt me-2 w-20px"></i> Sair</a></li>
+                        </ul>
+                    </div>
+
+                    {% elseif usuario().level == 1 %}
+                    <div class="dropdown">
+                        <button type="button" class="btn-user-filled dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="fa-solid fa-user me-2" style="color: var(--cor-laranja);"></i> {{usuario().nome |
+                            upper}}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-premium dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{url('saas')}}"><i class="fas fa-cog me-2 w-20px"></i>
+                                    Minha Conta</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="{{url('saas/sair')}}"><i
+                                        class="fas fa-sign-out-alt me-2 w-20px"></i> Sair</a></li>
+                        </ul>
+                    </div>
+
+                    {% else %}
+                    <a class="btn-user-nav text-decoration-none" href="{{url('cadastro')}}">
+                        <i class="fas fa-user-plus me-1"></i> Cadastre-se
+                    </a>
+                    {% endif %}
+
+                    {% include 'modals/login.html' %}
+                    {% include 'modals/cadastro.html' %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="container position-relative" style="z-index: 1050;">
+        <div id="buscaResultado" class="position-absolute w-100 bg-white rounded-4 shadow mt-2"
+            style="display:none; max-height: 400px; overflow-y: auto;"></div>
+    </div>
+</header>

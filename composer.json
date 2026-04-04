@@ -1,0 +1,33 @@
+{
+    "name": "ceodevmorais/siteong",
+    "description": "Associacao Grande Família",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "sistema\\": "sistema/"
+        },
+        "files": [
+            "sistema/configuracao.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Fernando Aguiar",
+            "homepage": "https://www.devmorais.com.br",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "ceo@devmorais.com.br"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0",
+        "pecee/simple-router": "dev-master",
+        "twig/twig": "^3.0",
+        "digitalnature/php-ref": "dev-master",
+        "verot/class.upload.php": "dev-master",
+        "phpmailer/phpmailer": "dev-master"
+       
+    }
+}

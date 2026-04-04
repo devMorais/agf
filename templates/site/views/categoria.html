@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<div class="container my-5 pt-4">
+    <div class="row g-5">
+
+        <div class="col-lg-8 col-md-12">
+
+            <div class="mb-5 reveal">
+                <h2 class="fw-black text-dark" style="font-weight: 900; font-size: 2.2rem; letter-spacing: -1px;">
+                    Explorar <span style="color: var(--cor-laranja);">Conteúdos</span>
+                </h2>
+                <p class="text-muted">Acompanhe nossas últimas ações, projetos e notícias da comunidade.</p>
+            </div>
+
+            {% if posts %}
+            <div class="row g-4">
+                {% for post in posts %}
+                <div class="col-md-6 reveal delay-{{ loop.index % 3 + 1 }}">
+                    <div class="card-post">
+
+                        {% if post.capa %}
+                        <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}" tooltip="tooltip"
+                            title="{{post.titulo}}">
+                            <img src="{{url('uploads/imagens/thumbs/'~post.capa)}}" alt="{{post.titulo}}"
+                                class="capa-post" />
+                        </a>
+                        {% endif %}
+
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge-categoria">{{post.categoria.titulo}}</span>
+                                <small class="text-muted fw-medium"><i class="far fa-clock me-1 text-warning"></i> {{
+                                    contarTempo(post.cadastrado_em) }}</small>
+                            </div>
+
+                            <a href="{{url('post/'~post.categoria.slug~'/'~post.slug)}}" class="card-title-link">
+                                <h4 class="fw-bold mb-3 lh-base" style="font-size: 1.3rem;">{{post.titulo}}</h4>
+                            </a>
+
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
+                                {{resumirTexto(post.texto, 120)}}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+
+                                <div>
+                                    {% if not usuario() and post.categoria_id == 1 %}
+                                    <button type="button" class="btn-brand-outline" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop">
+                                        <i class="fas fa-hand-holding-heart me-1"></i> Participar
+                                    </button>
+                                    {% endif %}
+
+                                    {% if usuario().level == 1 and post.categoria_id == 1 %}
+                                    <a href="{{url('inscricoes/'~post.id)}}"
+                                        class="btn-brand-outline text-decoration-none">
+                                        <i class="fas fa-hand-holding-heart me-1"></i> Participar
+                                    </a>
+                                    {% endif %}
+                                </div>
+
+                                {% if usuario().level == 3 %}
+                                <div class="admin-controls">
+                                    <a href="{{ url('admin/posts/editar/'~post.id) }}" class="btn-admin"
+                                        tooltip="tooltip" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a href="{{ url('admin/posts/deletar/'~post.id) }}" class="btn-admin text-danger"
+                                        tooltip="tooltip" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="pagination-wrapper reveal delay-3">
+                {{paginacao|raw}}
+                <div class="text-center mt-3">
+                    <small class="text-muted fw-medium">{{paginacaoInfo}}</small>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="alert alert-warning text-center fw-bold rounded-4 shadow-sm border-0 reveal" role="alert">
+                <i class="fas fa-folder-open fs-4 d-block mb-2 opacity-50"></i> Nenhum post cadastrado para exibir nesta
+                seção!
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="col-lg-4 mt-5 mt-lg-0 reveal delay-2">
+            {% include 'sidebar.html' %}
+        </div>
+
+    </div>
+</div>
+
+{% include 'modals/inscricao.html' %}
+{% endblock %}

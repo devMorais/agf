@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block corpo %}
+{{ flash() }}
+<div class="bg-white p-4 my-3 rounded shadow-sm">
+    <h5 class="text-center fw-bold" id="inscricoes">Lista de projetos:</h5>
+    {% if usuario.cpf and usuario.nascimento and usuario.telefone and end.cep and end.bairro and end.estado and end.endereco and end.cidade %}
+    {{ flash() }}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabelaInscrevase" url="{{url()}}" class="table table-sm table-success table-hover table-striped table-bordered border-dark" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Cod projeto:</th>
+                            <th>Projeto:</th>
+                            <th>Ação:</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>    
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> <!-- Ícone de triângulo de exclamação -->
+        <span style="font-size: 1.2em; font-weight: bold;">Por favor, conclua seu cadastro para participar de nossos projetos. Obrigado pela compreensão.</span>
+    </div>
+    {% endif %}
+</div>
+{% include 'modals/editarEndereco.html' %}
+{% endblock %}

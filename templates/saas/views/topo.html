@@ -1,0 +1,40 @@
+<header class="fundo5 py-4">
+    <div class="container">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-md-3 text-center text-md-start h1">
+                    <img src="{{ url('templates/saas/assets/img/LOGO.png') }}" alt="AGF" height="100" width="100">
+            </div>
+            <div class="col-md-6 text-center h4 text-light">
+                {{constant('SITE_NOME')}} - {{constant('SITE_DESCRICAO')}}
+            </div>
+            <div class="col-md-3 text-center text-md-end">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="far fa-user me-2"></i>{{usuario().nome | upper}}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 280px;">
+                        <li>
+                            <a class="dropdown-item" href="{{url('saas')}}">
+                                Minha Conta
+                            </a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#minhasInscricoes" aria-controls="offcanvasTop">
+                                Minhas Inscrições
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{url('saas/sair')}}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

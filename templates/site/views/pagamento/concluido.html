@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+    .success-card {
+        border: none;
+        border-radius: 1.25rem;
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .success-header {
+        background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+        color: white;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .pending-header {
+        background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%);
+        color: #212529;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem auto;
+    }
+
+    .icon-circle i {
+        font-size: 2.5rem;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card success-card">
+
+                {% if doacao.status == 'confirmada' %}
+                <div class="success-header">
+                    <div class="icon-circle">
+                        <i class="fas fa-check text-white"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2">Muito Obrigado!</h2>
+                    <p class="mb-0 fs-5">Sua doação foi confirmada com sucesso.</p>
+                </div>
+                {% else %}
+                <div class="pending-header">
+                    <div class="icon-circle">
+                        <i class="fas fa-clock text-dark"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2">Pagamento em Processamento</h2>
+                    <p class="mb-0 fs-5">Estamos aguardando a confirmação da InfinitePay.</p>
+                </div>
+                {% endif %}
+
+                <div class="card-body p-4 p-md-5 bg-white text-center">
+                    <h5 class="text-muted mb-4">Detalhes da sua contribuição</h5>
+
+                    <ul class="list-group list-group-flush text-start mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Valor da Doação:</span>
+                            <span class="fw-bold fs-5 text-success">R$ {{ doacao.valor|number_format(2, ',', '.')
+                                }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Nº de Controle:</span>
+                            <span class="fw-semibold">#{{ str_pad(doacao.id, 6, '0', 0) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Método:</span>
+                            <span class="fw-semibold">
+                                {% if doacao.metodo %}
+                                {{ doacao.metodo }}
+                                {% else %}
+                                Processando...
+                                {% endif %}
+                            </span>
+                        </li>
+                    </ul>
+
+                    {% if doacao.status == 'confirmada' %}
+                    <p class="text-muted mb-4">
+                        Com a sua ajuda, estamos um passo mais perto de transformar a realidade de dezenas de famílias.
+                        A <b>Associação Grande Família</b> agradece de coração!
+                    </p>
+                    {% else %}
+                    <p class="text-muted mb-4">
+                        Se você realizou o pagamento via PIX ou Cartão, a confirmação costuma levar apenas alguns
+                        segundos. Fique de olho no seu e-mail!
+                    </p>
+                    {% endif %}
+
+                    <a href="{{ url('') }}" class="btn btn-outline-primary btn-lg w-100 rounded-pill mt-2">
+                        <i class="fas fa-home me-2"></i> Voltar para o Início
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+img {
+    width: auto;
+}
+
+.capa {
+    max-width: 80px
+}
+
+.offcanvas-body {
+    padding: 20px;
+}
+
+.container {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.alert {
+    margin-top: 20px;
+}

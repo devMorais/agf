@@ -1,0 +1,56 @@
+{% extends "dashboard.html" %}
+{% block conteudo %}  
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{url('admin/dashboard')}}">
+                Dashboard
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Realizar uma inscrição:
+        </li>
+    </ol>
+</nav>
+{% if not id %}
+<div class="row">
+    <div class="col-md-6">
+        <form data-url-busca="{{ url('admin/buscar/cpf') }}" role="search">
+            <input type="search" name="busca" id="busca" class="form-control form-control-dark text-bg-light" placeholder="Buscar código do usuário por CPF:" aria-label="Search">
+        </form> 
+    </div>
+    <div class="col-md-6">
+        <span id="resultadoBuscarCpf" style="font-size: 0.9em; color: #333; text-transform: lowercase; opacity: 0.6;"></span>
+    </div>
+</div>
+<hr>
+{% endif %}
+<div class="card border-0 shadow-sm my-4">
+    <div class="card-body">
+        <form class="formularioAjax" action="{% if inscricao.id %}{{url('admin/inscricoes/editar/'~inscricao.id)}}{% else %}{{url('admin/inscricoes/cadastrar')}}{% endif %}" method="post">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label for="id_usuario" class="form-label text-danger"><i class="fas fa-user"></i></label>
+                        <input type="text" name="id_usuario" value="{{id}}" id="usuario_id" class="form-control" readonly>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="mb-3">
+                        <label for="id_post" class="form-label">Qual Projeto?</label>
+                        <select class="form-select" name="id_post" id="id_post">
+                            <option value="">Escolha um projeto:</option>
+                            {% for projeto in projetos %}
+                            <option value="{{projeto.id}}">{{projeto.titulo}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid gap-2">
+                <input type="submit" class="btn btn-dark" value="{% if inscricao.id %}Atualizar{% else %}Cadastrar{% endif %}">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

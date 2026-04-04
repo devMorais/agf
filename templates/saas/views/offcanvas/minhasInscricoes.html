@@ -1,0 +1,41 @@
+<div class="offcanvas offcanvas-top" tabindex="-1" id="minhasInscricoes" aria-labelledby="offcanvasTopLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasTopLabel">Minhas Inscrições:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body container">
+        <div class="card-body">
+            {% if inscricoes %}
+            <div class="table-responsive">
+                <table class="table table-hover table-sm table-bordered table-success" id="tabela">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="fw-bold">Nº Inscrição:</th>
+                            <th class="fw-bold text-center">Projeto:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscricao in inscricoes %}
+                        <tr>
+                            <td>{{inscricao.id}}</td>                           
+                            <td>
+                                <div class="d-flex flex-column align-items-center">
+                                    <div>{{inscricao.postInscricao.titulo}}</div>
+                                    <div><small>Código projeto:</small> {{inscricao.postInscricao.id}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning mt-4" role="alert">
+                Nenhuma inscrição cadastrada para exibir!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+

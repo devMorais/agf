@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<style>
+   
+</style>
+
+<div class="container my-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-10">
+
+            <div class="mb-4">
+                {{flash()}}
+            </div>
+
+            <div class="form-card reveal">
+
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h2 class="form-title">Faça seu Cadastro</h2>
+                    <p class="text-muted mb-0">Preencha seus dados com segurança.</p>
+                </div>
+
+                <div class="form-body">
+
+                    <div class="alert-premium">
+                        <i class="fas fa-info-circle"></i>
+                        <p><strong>Atenção:</strong> O cadastro se destina a doações que ainda receberemos, que podem
+                            ser cestas básicas ou outros donativos.</p>
+                    </div>
+
+                    <form class="formularioAjax" action="{{url('cadastro')}}" method="post">
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" name="nome" id="nome" value="{{usuario.nome}}"
+                                        class="form-control" placeholder="Nome Completo">
+                                    <label for="nome">Nome Completo</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="telefone" id="telefone" value="{{usuario.telefone}}"
+                                        class="form-control" placeholder="Telefone">
+                                    <label for="telefone">Telefone (WhatsApp)</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="nascimento" id="nascimento" value="{{usuario.nascimento}}"
+                                        class="form-control" placeholder="Data de Nascimento">
+                                    <label for="nascimento">Data de Nascimento</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" name="endereco" id="endereco" value="{{usuario.endereco}}"
+                                        class="form-control" placeholder="Endereço Completo">
+                                    <label for="endereco">Endereço Completo</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" name="texto" placeholder="Descreva sua situação aqui"
+                                        id="texto" style="height: 140px; resize: none;">{{usuario.texto}}</textarea>
+                                    <label for="texto">Fale um pouco sobre você e sua renda familiar:</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn-submit-premium">
+                                    Concluir Cadastro <i class="fas fa-check ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

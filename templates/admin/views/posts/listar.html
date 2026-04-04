@@ -1,0 +1,39 @@
+{% extends "dashboard.html" %}
+
+{% block conteudo %}  
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{url('admin/dashboard')}}">
+                Dashboard
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Projetos e notícias
+        </li>
+    </ol>
+</nav>
+{{ flash() }}
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="tabelaPosts" url="{{url()}}" class="table table-hover table-striped table table-bordered border-dark" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Código:</th>
+                        <th>Imagem:</th>
+                        <th class="text-center">Título</th>
+                        <th>Categoria</th>
+                        <th>Visitas</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>    
+    </div>
+    <a href="{{url('admin/posts/cadastrar')}}" class="btn btn-dark my-2">
+        Cadastrar
+    </a>
+</div>
+{% endblock %}
