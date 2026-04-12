@@ -63,6 +63,7 @@ try {
         SimpleRouter::match(['get', 'post'], URL_ADMIN . 'usuarios/editar/{id}', 'AdminUsuarios@editar');
         SimpleRouter::get(URL_ADMIN . 'usuarios/deletar/{id}', 'AdminUsuarios@deletar');
         SimpleRouter::post(URL_ADMIN . 'usuarios/datatable', 'AdminUsuarios@datatable');
+        SimpleRouter::get(URL_ADMIN . 'usuarios/visualizar/{id}', 'AdminUsuarios@visualizar');
 
         //ADMIN ENDERECOS
         SimpleRouter::get(URL_ADMIN . 'enderecos/listar/', 'AdminEnderecos@listar');

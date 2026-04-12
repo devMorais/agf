@@ -7,31 +7,29 @@ use sistema\Nucleo\Helpers;
 use sistema\Modelo\PostModelo;
 use sistema\Modelo\UsuarioModelo;
 use sistema\Modelo\CategoriaModelo;
-use sistema\Modelo\InscricaoModelo;
+use sistema\Modelo\DoacaoModelo; // Importante adicionar
 use sistema\Suporte\XDebug;
 
-/**
- * Classe AdminDashboard
- *
- * @author Fernando Aguiar
- */
 class AdminDashboard extends AdminControlador
 {
-
-    /**
-     * Home do admin
-     * @return void
-     */
     public function dashboard(): void
     {
         $posts = new PostModelo();
-
-
-
         $usuarios = new UsuarioModelo();
         $categorias = new CategoriaModelo();
+        $doacoes = new DoacaoModelo();
+
+        // Para somar valores, buscamos o resultado da coluna SUM
+        $soma = $doacoes->busca("status = :s", "s=confirmada", "SUM(valor) as total")->resultado();
+        $totalArrecadado = $soma ? $soma->total : 0;
 
         echo $this->template->renderizar('dashboard.html', [
+            'doacoes' => [
+                'ultimas' => $doacoes->busca("status = :s", "s=confirmada")->ordem('id DESC')->limite(5)->resultado(true),
+                'total_valor' => $totalArrecadado,
+                'total_qtd' => $doacoes->busca("status = :s", "s=confirmada COUNT(id)", "id")->total(),
+                'pendentes' => $doacoes->busca("status = :s", "s=aguardando COUNT(id)", "id")->total(),
+            ],
             'posts' => [
                 'posts' => $posts->busca()->ordem('id DESC')->limite(5)->resultado(true),
                 'total' => $posts->busca(null, 'COUNT(id)', 'id')->total(),
@@ -39,32 +37,19 @@ class AdminDashboard extends AdminControlador
                 'inativo' => $posts->busca('status = :s', 's=0 COUNT(status)', 'status')->total()
             ],
             'categorias' => [
-                'categorias' => $categorias->busca()->ordem('id DESC')->limite(5)->resultado(true),
                 'total' => $categorias->busca()->total(),
-                'categoriasAtiva' => $categorias->busca('status = 1')->total(),
-                'categoriasInativa' => $categorias->busca('status = 0')->total(),
             ],
             'usuarios' => [
                 'logins' => $usuarios->busca()->ordem('ultimo_login DESC')->limite(5)->resultado(true),
-                'usuarios' => $usuarios->busca('level != 3')->total(),
-                'usuariosAtivo' => $usuarios->busca('status = 1 AND level != 3')->total(),
-                'usuariosInativo' => $usuarios->busca('status = 0 AND level != 3')->total(),
+                'total' => $usuarios->busca('level != 3')->total(),
                 'admin' => $usuarios->busca('level = 3')->total(),
-                'adminAtivo' => $usuarios->busca('status = 1 AND level = 3')->total(),
-                'adminInativo' => $usuarios->busca('status = 0 AND level = 3')->total()
             ],
         ]);
     }
-
-    /**
-     * Faz logout do usuário
-     * @return void
-     */
     public function sair(): void
     {
         $sessao = new Sessao();
         $sessao->limpar('usuarioId');
-
         $this->mensagem->informa('Você saiu do painel de controle!')->flash();
         Helpers::redirecionar('/');
     }

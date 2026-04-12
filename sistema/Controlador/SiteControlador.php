@@ -24,8 +24,6 @@ class SiteControlador extends Controlador
      */
     public function index(): void
     {
-        //helpers::redirecionar('erro404');
-
         $posts = (new PostModelo())->busca("status = 1");
         $img = (new BannerModelo())->busca()->resultado();
 

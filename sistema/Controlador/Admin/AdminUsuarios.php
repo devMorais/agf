@@ -6,6 +6,7 @@ use sistema\Nucleo\Helpers;
 use sistema\Modelo\UsuarioModelo;
 use sistema\Modelo\EnderecoModelo;
 use sistema\Modelo\ImagemModelo;
+use sistema\Suporte\XDebug;
 use Verot\Upload\Upload;
 
 /**
@@ -284,20 +285,16 @@ class AdminUsuarios extends AdminControlador
             Helpers::redirecionar('admin/usuarios/listar');
         }
 
-        // 2. Busca o endereço (assumindo que existe uma coluna usuario_id na tabela enderecos)
-        $enderecoModelo = new EnderecoModelo();
-        $enderecoModelo->busca("usuario_id = :uid", "uid={$id}");
-        $endereco = $enderecoModelo->resultado(); // Retorna o objeto do endereço ou false
+        // 2. Busca o endereço (Modo simplificado, direto no ID para o banco não se confundir)
+        $endereco = (new EnderecoModelo())->busca("usuario_id = {$id}")->resultado();
 
-        // 3. Busca as fotos
-        $imagemModelo = new ImagemModelo();
-        $imagemModelo->busca("id_usuario = :uid", "uid={$id}");
-        $arquivos = $imagemModelo->resultado(true); // Retorna array de objetos
+        // 3. Busca as fotos (Modo simplificado)
+        $arquivos = (new ImagemModelo())->busca("id_usuario = {$id}")->resultado(true);
 
         // 4. Renderiza o template enviando os dados
         echo $this->template->renderizar('usuarios/visualizar.html', [
             'usuarios'  => $usuario,
-            'enderecos' => $endereco, // Se não tiver endereço, isso vai como false/null
+            'enderecos' => $endereco,
             'arquivos'  => $arquivos
         ]);
     }
@@ -345,8 +342,10 @@ class AdminUsuarios extends AdminControlador
                 if ($usuario->level == 3) {
                     $acao = '<i class="fa-solid fa-lock m-1 text-danger"></i>';
                 } else {
-                    $acao = '<a href="' . Helpers::url('admin/usuarios/editar/' . $usuario->id) . '" tooltip="tooltip" title="Editar"><i class="fa-solid fa-pen m-1"></i></a>';
-                    $acao .= '<a href="' . Helpers::url('admin/inscricoes/visualizar/' . $usuario->id) . '" tooltip="tooltip" title="Visualizar detalhes"><i class="fa-solid fa-eye m-1"></i></a>';
+                    $acao = '<a href="' . Helpers::url('admin/usuarios/editar/' . $usuario->id) . '" tooltip="tooltip" title="Editar"><i class="fa-solid fa-pen m-1 text-primary"></i></a>';
+
+                    // AQUI ESTAVA 'inscricoes/visualizar/', MUDAMOS PARA 'usuarios/visualizar/'
+                    $acao .= '<a href="' . Helpers::url('admin/usuarios/visualizar/' . $usuario->id) . '" tooltip="tooltip" title="Visualizar detalhes"><i class="fa-solid fa-eye m-1 text-dark"></i></a>';
                 }
 
                 // --- CORREÇÃO DO ERRO DE 100 REGISTROS ---

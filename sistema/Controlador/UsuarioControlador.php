@@ -38,24 +38,36 @@ class UsuarioControlador extends Controlador
     public function cadastro(): void
     {
         $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+
         if (isset($dados)) {
             if ($this->validarDadosCadastroInicial($dados)) {
                 $usuario = new UsuarioModelo();
                 $usuario->level = 1;
                 $usuario->nome = $dados['nome'];
+
+                // Gera um e-mail falso provisório
                 $numeroAleatorio = random_int(10000, 999999);
                 $usuario->email = "fixo{$numeroAleatorio}@gmail.com";
+
+                // Gera uma senha provisória
                 $usuario->senha = Helpers::gerarSenha('123456');
+
                 $usuario->telefone = $dados['telefone'];
-                $usuario->endereco = $dados['endereco'];
                 $usuario->url_video = null;
                 $usuario->cpf = null;
-                $usuario->nascimento = $dados['nascimento'];
                 $usuario->texto = $dados['texto'];
                 $usuario->status = 1;
                 $usuario->token = null;
 
+                // Tenta salvar o usuário primeiro
                 if ($usuario->salvar()) {
+
+                    // Se o usuário salvou, pegamos o ID dele e salvamos o endereço
+                    $endereco = new EnderecoModelo();
+                    $endereco->usuario_id = $usuario->id;
+                    $endereco->logradouro = $dados['endereco'];
+                    $endereco->salvar();
+
                     $mensagemSucesso = "Cadastro recebido com sucesso!";
                     Helpers::json('successo', $mensagemSucesso);
                 } else {
@@ -63,6 +75,7 @@ class UsuarioControlador extends Controlador
                 }
             }
         }
+
         echo $this->template->renderizar('cadastro.html', [
             'titulo' => 'Cadastre-se'
         ]);
@@ -98,6 +111,7 @@ class UsuarioControlador extends Controlador
                 }
             }
         }
+
         echo $this->template->renderizar('ativar.html', [
             'usuario' => $usuario
         ]);
@@ -110,7 +124,6 @@ class UsuarioControlador extends Controlador
      */
     public function validarDadosCadastro(array $dados): bool
     {
-
         if (empty($dados['senha'])) {
             Helpers::json('erro', 'Informe uma senha!');
             return false;
@@ -128,11 +141,6 @@ class UsuarioControlador extends Controlador
         return true;
     }
 
-    /**
-     * Validar campos do cadastro
-     * @param array $dados
-     * @return bool
-     */
     /**
      * Validar campos do cadastro inicial
      * @param array $dados
@@ -155,26 +163,6 @@ class UsuarioControlador extends Controlador
             return false;
         }
 
-        // Validação da data de nascimento
-        if (empty($dados['nascimento'])) {
-            Helpers::json('erro', 'Informe sua data de nascimento');
-            return false;
-        } else {
-            // Tenta criar um objeto de data a partir do formato brasileiro (dd/mm/aaaa)
-            $data = \DateTime::createFromFormat('d/m/Y', $dados['nascimento']);
-
-            // Se a data for inválida (formato incorreto) OU se não for uma data real (ex: 30/02/2025)
-            if (!$data || $data->format('d/m/Y') !== $dados['nascimento']) {
-                // Tenta criar a partir do formato do input type="date" (aaaa-mm-dd)
-                $data = \DateTime::createFromFormat('Y-m-d', $dados['nascimento']);
-                if (!$data || $data->format('Y-m-d') !== $dados['nascimento']) {
-                    Helpers::json('erro', 'A data de nascimento informada é inválida. Use o formato dd/mm/aaaa.');
-                    return false;
-                }
-            }
-        }
-
-
         if (empty($dados['texto'])) {
             Helpers::json('erro', 'Informe sua história');
             return false;
@@ -190,6 +178,7 @@ class UsuarioControlador extends Controlador
     public function login(): void
     {
         $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+
         if (isset($dados)) {
             if (in_array('', $dados)) {
                 Helpers::json('erro', 'Informe seu login e senha!');

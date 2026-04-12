@@ -19,10 +19,21 @@ class PagamentoInfinitepayControlador extends Controlador
         $infinitePay = new InfinitePay($doacao->id);
         $urlRetorno = Helpers::url('doacao/pagamento/' . $doacao->id);
 
+        // --- MONTA OS DADOS DO CLIENTE PARA A API ---
+        $dadosCliente = null;
+        if (!empty($doacao->doador_nome) || !empty($doacao->doador_email)) {
+            $dadosCliente = [
+                'nome'     => $doacao->doador_nome,
+                'email'    => $doacao->doador_email,
+                'telefone' => $doacao->doador_telefone
+            ];
+        }
+        // --------------------------------------------
+
         $resultado = $infinitePay->gerarLinkPagamento(
             [['quantidade' => 1, 'valor' => (float) $doacao->valor, 'descricao' => 'Doação - Associação Grande Família']],
             'doacao-' . $doacao->id,
-            null,
+            $dadosCliente, // Passa o array com nome, email e telefone
             $urlRetorno
         );
 
@@ -30,11 +41,12 @@ class PagamentoInfinitepayControlador extends Controlador
             return $resultado;
         }
 
-        $doacao->infinitepay_link = $resultado['link'];
-        $doacao->infinitepay_order_nsu = $resultado['order_nsu'];
-        $doacao->infinitepay_slug = $resultado['slug'] ?? null;
-
-        return ['erro' => false];
+        return [
+            'erro' => false,
+            'link' => $resultado['link'],
+            'order_nsu' => $resultado['order_nsu'],
+            'slug' => $resultado['slug'] ?? null
+        ];
     }
 
     public function exibirTelaPagamento(int $id): void

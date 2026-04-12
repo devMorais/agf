@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Detalhes do Usuário</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('admin/usuarios/listar') }}"
+                                class="text-decoration-none">Usuários</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ usuarios.nome }}</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a href="{{ url('admin/usuarios/listar') }}" class="btn btn-light border shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Voltar
+                </a>
+            </div>
+        </div>
+
+        {{ flash() }}
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body">
+                        <div class="text-center mb-4 mt-2">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 90px; height: 90px;">
+                                <i class="fas fa-user fa-3x text-secondary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ usuarios.nome }}</h5>
+                            <span
+                                class="badge {{ usuarios.status == 1 ? 'bg-success' : 'bg-danger' }} rounded-pill px-3">
+                                {{ usuarios.status == 1 ? 'Ativo' : 'Inativo' }}
+                            </span>
+                        </div>
+
+                        <h6 class="text-uppercase text-muted fw-bold small mb-3">Informações de Contato</h6>
+                        <ul class="list-group list-group-flush mb-0">
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted"><i class="fas fa-envelope me-2 w-15px"></i> E-mail</span>
+                                <span class="fw-medium text-break text-end ms-2">{{ usuarios.email }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted"><i class="fas fa-phone me-2 w-15px"></i> Telefone</span>
+                                <span class="fw-medium">{{ usuarios.telefone|default('Não informado') }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted"><i class="fas fa-id-card me-2 w-15px"></i> CPF</span>
+                                <span class="fw-medium">{{ usuarios.cpf|default('Não informado') }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted"><i class="fas fa-calendar-alt me-2 w-15px"></i> Cadastro</span>
+                                <span class="fw-medium">{{ usuarios.cadastrado_em|date("d/m/Y") }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="mb-0 fw-bold"><i class="fas fa-map-marker-alt text-primary me-2"></i>Endereço</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if enderecos %}
+                        <ul class="list-group list-group-flush mb-0">
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">CEP</span>
+                                <span class="fw-medium">{{ enderecos.cep }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Logradouro</span>
+                                <span class="fw-medium text-end ms-3">{{
+                                    enderecos.logradouro|default(enderecos.endereco) }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Bairro</span>
+                                <span class="fw-medium text-end">{{ enderecos.bairro|default('-') }}</span>
+                            </li>
+                            <li
+                                class="list-group-item px-0 d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Cidade/UF</span>
+                                <span class="fw-medium">{{ enderecos.cidade|default('-') }} / {{
+                                    enderecos.estado|default('-') }}</span>
+                            </li>
+                        </ul>
+                        {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-map-marked-alt fs-2 d-block mb-2 opacity-50"></i>
+                            <p class="mb-0 small">Nenhum endereço cadastrado.</p>
+                            <a href="{{ url('admin/enderecos/cadastrar/' ~ usuarios.id) }}"
+                                class="btn btn-sm btn-outline-primary mt-3 rounded-pill">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8">
+
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="mb-0 fw-bold"><i class="fas fa-book-open text-success me-2"></i>História da Família
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% if usuarios.texto %}
+                        <div class="text-muted" style="line-height: 1.8; font-size: 1.05rem;">
+                            {{ usuarios.texto | raw }}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center my-3"><i class="fas fa-info-circle me-2"></i>Nenhuma história
+                            informada.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-3 h-100">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fab fa-youtube text-danger me-2"></i>Vídeo de
+                                    Apresentação</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                {% set video_url = usuarios.url_video is defined and usuarios.url_video|length > 0 ?
+                                usuarios.url_video : null %}
+                                {% set embed_url = null %}
+
+                                {% if video_url is not null %}
+                                {% set video_id = null %}
+
+                                {# Trata links normais: watch?v= #}
+                                {% if 'watch?v=' in video_url %}
+                                {% set video_id = video_url|split('v=')|last|split('&')|first %}
+                                {# Trata links curtos: youtu.be/ #}
+                                {% elseif 'youtu.be/' in video_url %}
+                                {% set video_id = video_url|split('youtu.be/')|last|split('?')[0] %}
+                                {# Trata links de Shorts: youtube.com/shorts/ #}
+                                {% elseif '/shorts/' in video_url %}
+                                {% set video_id = video_url|split('/shorts/')|last|split('?')[0] %}
+                                {% endif %}
+
+                                {% if video_id %}
+                                {% set embed_url = 'https://www.youtube.com/embed/' ~ video_id %}
+                                {% endif %}
+                                {% endif %}
+
+                                {% if embed_url %}
+                                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                                    <iframe src="{{ embed_url }}" title="Vídeo do Usuário"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+                                {% else %}
+                                <div class="text-center py-5 text-muted bg-light rounded">
+                                    <i class="fas fa-play-circle mb-2 fs-2 d-block opacity-50"></i>
+                                    {% if video_url %}
+                                    <p class="small mb-2">URL inválida ou não suportada.</p>
+                                    <a href="{{ video_url }}" target="_blank"
+                                        class="btn btn-sm btn-outline-danger rounded-pill">Abrir no YouTube</a>
+                                    {% else %}
+                                    <span class="small">Nenhum vídeo cadastrado.</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-3 h-100">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fas fa-images text-info me-2"></i>Galeria de Fotos
+                                </h6>
+                            </div>
+                            <div class="card-body p-3">
+                                {% if arquivos and arquivos | length > 0 %}
+                                <div id="fotosCarousel"
+                                    class="carousel slide carousel-fade shadow-sm rounded overflow-hidden h-100"
+                                    data-bs-ride="carousel">
+                                    <div class="carousel-indicators">
+                                        {% for arquivo in arquivos %}
+                                        <button type="button" data-bs-target="#fotosCarousel"
+                                            data-bs-slide-to="{{ loop.index0 }}" {% if loop.index0==0 %}class="active"
+                                            aria-current="true" {% endif %} aria-label="Foto {{ loop.index }}"></button>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="carousel-inner h-100">
+                                        {% for arquivo in arquivos %}
+                                        <div class="carousel-item h-100 {% if loop.index0 == 0 %}active{% endif %}">
+                                            <a href="{{ url(arquivo.imagem) }}" data-fancybox="gallery"
+                                                data-caption="Foto de {{ usuarios.nome }}">
+                                                <img src="{{ url(arquivo.imagem) }}" class="d-block w-100 h-100"
+                                                    alt="Foto do Usuário" style="object-fit: cover; min-height: 200px;">
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if arquivos | length > 1 %}
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#fotosCarousel"
+                                        data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Anterior</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#fotosCarousel"
+                                        data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Próximo</span>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <div
+                                    class="text-center py-5 text-muted bg-light rounded h-100 d-flex flex-column justify-content-center">
+                                    <i class="fas fa-camera mb-2 fs-2 d-block opacity-50"></i>
+                                    <span class="small">Nenhuma foto enviada.</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    {% include 'rodape.html' %}
+</div>
+{% endblock %}

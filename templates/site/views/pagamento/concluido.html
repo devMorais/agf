@@ -63,21 +63,39 @@
                 {% endif %}
 
                 <div class="card-body p-4 p-md-5 bg-white text-center">
+                    {% if doacao.status == 'confirmada' and doacao.doador_nome and doacao.doador_anonimo == 0 %}
+                    <h4 class="text-dark fw-bold mb-1">Olá, {{ doacao.doador_nome }}!</h4>
+                    <p class="text-muted mb-4">Seu apoio faz toda a diferença.</p>
+                    {% endif %}
+
                     <h5 class="text-muted mb-4">Detalhes da sua contribuição</h5>
 
                     <ul class="list-group list-group-flush text-start mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="text-muted">Doador:</span>
+                            <span class="fw-semibold">
+                                {% if doacao.doador_anonimo == 1 %}
+                                <i class="fas fa-user-secret me-1"></i> Doador Anônimo
+                                {% else %}
+                                {{ doacao.doador_nome|default('Amigo da Família') }}
+                                {% endif %}
+                            </span>
+                        </li>
+
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <span class="text-muted">Valor da Doação:</span>
                             <span class="fw-bold fs-5 text-success">R$ {{ doacao.valor|number_format(2, ',', '.')
                                 }}</span>
                         </li>
+
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <span class="text-muted">Nº de Controle:</span>
                             <span class="fw-semibold">#{{ str_pad(doacao.id, 6, '0', 0) }}</span>
                         </li>
+
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <span class="text-muted">Método:</span>
-                            <span class="fw-semibold">
+                            <span class="fw-semibold text-uppercase">
                                 {% if doacao.metodo %}
                                 {{ doacao.metodo }}
                                 {% else %}
@@ -88,15 +106,21 @@
                     </ul>
 
                     {% if doacao.status == 'confirmada' %}
-                    <p class="text-muted mb-4">
+                    <p class="text-muted mb-4 small">
                         Com a sua ajuda, estamos um passo mais perto de transformar a realidade de dezenas de famílias.
                         A <b>Associação Grande Família</b> agradece de coração!
                     </p>
                     {% else %}
-                    <p class="text-muted mb-4">
-                        Se você realizou o pagamento via PIX ou Cartão, a confirmação costuma levar apenas alguns
-                        segundos. Fique de olho no seu e-mail!
+                    <p class="text-muted mb-4 small">
+                        Se você já realizou o pagamento, a confirmação costuma levar apenas alguns segundos.
+                        Esta página será atualizada automaticamente assim que recebermos o sinal da InfinitePay.
                     </p>
+                    <script>
+                        // Recarrega a página a cada 5 segundos para verificar se o status mudou via Webhook
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 5000);
+                    </script>
                     {% endif %}
 
                     <a href="{{ url('') }}" class="btn btn-outline-primary btn-lg w-100 rounded-pill mt-2">

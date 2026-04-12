@@ -1,20 +1,100 @@
-<input type="checkbox" id="menu">
+<input type="checkbox" id="menu" class="d-none">
 <div class="sidebar">
-    <div class="sidebarLogo">
-        <a href="{{url('admin/dashboard')}}">
+    <div class="sidebarLogo text-center py-4">
+        <a href="{{ url('admin/dashboard') }}">
             <div class="logo">
-                <img src="{{ url('templates/site/assets/img/LOGO.png') }}" alt=" {{constant('SITE_NOME')}}" />
+                <img src="{{ url('templates/site/assets/img/LOGO.png') }}" alt="{{ constant('SITE_NOME') }}"
+                    class="img-fluid" style="max-height: 65px;" />
             </div>
         </a>
     </div>
-    <div class="sidebarMenu my-3">
-        <ul class="lead">
-            <li>
-                <a href="{{url('admin/usuarios/listar')}}">
-                    <i class="fas fa-users"></i>
-                    <span>Usuários:</span>
+
+    <div class="sidebarMenu mt-3">
+        <ul class="nav flex-column fs-6">
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/dashboard') }}" class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-tachometer-alt me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Dashboard</span>
                 </a>
             </li>
+
+            <hr class="border-secondary opacity-25 mx-3 my-2">
+
+            <li class="nav-item mb-1">
+                <a href="#" class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-hand-holding-heart text-success me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Doações</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/usuarios/listar') }}"
+                    class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-users me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Usuários</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/inscricoes/listar') }}"
+                    class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-clipboard-list me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Inscrições</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/enderecos/listar') }}"
+                    class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-map-marker-alt me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Endereços</span>
+                </a>
+            </li>
+
+            <hr class="border-secondary opacity-25 mx-3 my-2">
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/posts/listar') }}"
+                    class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-newspaper me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Postagens</span>
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="{{ url('admin/categorias/listar') }}"
+                    class="nav-link text-white d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-tags me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Categorias</span>
+                </a>
+            </li>
+
+            <hr class="border-secondary opacity-25 mx-3 my-2">
+
+            <li class="nav-item mt-4">
+                <a href="{{ url('admin/sair') }}" class="nav-link text-danger d-flex align-items-center py-2 px-4">
+                    <i class="fas fa-sign-out-alt me-3" style="width: 20px; text-align: center;"></i>
+                    <span>Sair do Painel</span>
+                </a>
+            </li>
+
         </ul>
     </div>
 </div>
+
+<style>
+    /* Efeito de hover (passar o mouse) suave para os links do menu */
+    .sidebarMenu .nav-link {
+        transition: all 0.3s ease;
+        border-radius: 0 25px 25px 0;
+        margin-right: 15px;
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .sidebarMenu .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        transform: translateX(5px);
+    }
+</style>

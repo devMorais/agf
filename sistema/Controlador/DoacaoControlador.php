@@ -35,7 +35,15 @@ class DoacaoControlador extends Controlador
         $doacao->usuario_id = null;
         $doacao->valor = (float) $dados['valor'];
         $doacao->status = 'aguardando';
+
+        // --- CAPTURA OS NOVOS DADOS ---
+        $doacao->doador_nome = $dados['nome'] ?? null;
+        $doacao->doador_email = $dados['email'] ?? null;
+        $doacao->doador_telefone = $dados['telefone'] ?? null;
+
+        // Se a checkbox 'anonimo' foi marcada, salva 1. Se não, salva 0.
         $doacao->doador_anonimo = isset($dados['anonimo']) ? 1 : 0;
+        // ------------------------------
 
         $isRecorrente = isset($dados['recorrente']) ? true : false;
 
@@ -59,11 +67,11 @@ class DoacaoControlador extends Controlador
             Helpers::redirecionar('doar');
             return;
         }
-        $doacaoAtualizar = (new DoacaoModelo())->buscaPorId($idDoacao);
 
-        $doacaoAtualizar->infinitepay_link = $doacao->infinitepay_link;
-        $doacaoAtualizar->infinitepay_order_nsu = $doacao->infinitepay_order_nsu;
-        $doacaoAtualizar->infinitepay_slug = $doacao->infinitepay_slug;
+        $doacaoAtualizar = (new DoacaoModelo())->buscaPorId($idDoacao);
+        $doacaoAtualizar->infinitepay_link = $resultado['link'];
+        $doacaoAtualizar->infinitepay_order_nsu = $resultado['order_nsu'];
+        $doacaoAtualizar->infinitepay_slug = $resultado['slug'] ?? null;
 
         if (!$doacaoAtualizar->salvar()) {
             $erroBancodados = $doacaoAtualizar->erro();

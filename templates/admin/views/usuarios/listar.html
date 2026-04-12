@@ -1,37 +1,94 @@
-{% extends "dashboard.html" %}
-{% block conteudo %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="{{url('admin/dashboard')}}">
-                Dashboard
-            </a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">
-            Usuários
-        </li>
-    </ol>
-</nav>
-{{ flash() }}
-<div class="card border-0 shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="tabelaUsuarios" url="{{url()}}"
-                class="table table-sm table-hover table-striped table-bordered border-dark" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>Texto</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-            </table>
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Gestão de Usuários</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Usuários</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a href="{{ url('admin/usuarios/cadastrar') }}" class="btn btn-dark rounded-pill shadow-sm"
+                    tooltip="tooltip" title="Cadastrar Novo Usuário">
+                    <i class="fas fa-plus-circle me-2"></i> Cadastrar Usuário
+                </a>
+            </div>
         </div>
-    </div>
-    <a href="{{url('admin/usuarios/cadastrar')}}" class="btn btn-dark" tooltip="tooltip" title="Cadastrar Post">
-        Cadastrar
-    </a>
+
+        {{ flash() }}
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm bg-white p-3 border-start border-dark border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Total de Usuários</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ total.usuarios }}</h4>
+                        </div>
+                        <i class="fas fa-users fa-2x text-dark opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm bg-white p-3 border-start border-success border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Usuários Ativos</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ total.usuariosAtivo }}</h4>
+                        </div>
+                        <i class="fas fa-user-check fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm bg-white p-3 border-start border-danger border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Administradores</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ total.admin }}</h4>
+                        </div>
+                        <i class="fas fa-user-shield fa-2x text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tabelaUsuarios" url="{{ url() }}"
+                        class="table table-sm table-hover table-striped table-bordered border-dark align-middle"
+                        style="width:100%">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome Completo</th>
+                                <th>Telefone</th>
+                                <th>Resumo (História)</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    {% include 'rodape.html' %}
 </div>
+
 {% endblock %}

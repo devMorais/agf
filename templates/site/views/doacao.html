@@ -2,7 +2,7 @@
 {% block conteudo %}
 
 <style>
-  
+
 </style>
 
 <div class="container my-5">
@@ -97,25 +97,31 @@
                         </div>
 
                         <div class="bg-light rounded-4 p-4 mb-4 border" style="border-color: #edf2f7 !important;">
+                            <h5 class="fw-bold text-dark mb-3 fs-6"><i class="fas fa-user-circle me-2"></i>Seus Dados
+                            </h5>
 
-                            <div class="form-check form-switch mb-3 d-flex align-items-center ps-0">
-                                <div class="form-check form-switch ps-5 mb-0">
-                                    <input class="form-check-input fs-4 mt-0" type="checkbox" role="switch"
-                                        id="recorrente" name="recorrente">
-                                </div>
-                                <label class="form-check-label ms-2 fw-bold text-dark d-flex align-items-center"
-                                    for="recorrente">
-                                    Fazer doação mensal
-                                    <span class="badge text-dark ms-2"
-                                        style="background-color: var(--cor-amarelo); font-size: 0.75rem;">Recomendado</span>
-                                </label>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label small fw-bold text-muted">Nome Completo</label>
+                                <input type="text" class="form-control" id="nome" name="nome"
+                                    placeholder="Digite seu nome" required>
                             </div>
-                            <p class="small text-muted ms-1 mb-3" style="padding-left: 3.5rem;">Sua doação será cobrada
-                                automaticamente todo mês. Cancele facilmente quando quiser.</p>
 
-                            <hr class="text-muted opacity-10 my-3">
-
-                            <div class="form-check mt-3 ps-0 d-flex align-items-center">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label small fw-bold text-muted">E-mail</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        placeholder="seu@email.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="telefone" class="form-label small fw-bold text-muted">Celular /
+                                        WhatsApp</label>
+                                    <input type="tel" class="form-control" id="telefone" name="telefone"
+                                        placeholder="(00) 00000-0000" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-light rounded-4 p-4 mb-4 border" style="border-color: #edf2f7 !important;">
+                            <div class="form-check ps-0 d-flex align-items-center">
                                 <div class="ps-1">
                                     <input class="form-check-input fs-5 ms-0 mt-0" type="checkbox" id="anonimo"
                                         name="anonimo" style="border-color: #cbd5e0;">
@@ -124,9 +130,7 @@
                                     Desejo que minha doação permaneça anônima no mural de doadores.
                                 </label>
                             </div>
-
                         </div>
-
                         <button type="submit" class="btn btn-donate w-100" id="btnDoar">
                             <i class="fas fa-heart me-2"></i> Doar Agora (PIX / Cartão)
                         </button>
@@ -187,6 +191,7 @@
         const valorInput = document.getElementById('valor').value;
         const msgErro = document.getElementById('msgErroValor');
         const btnDoar = document.getElementById('btnDoar');
+        const form = document.getElementById('formDoacao');
 
         // Validação no front-end: mínimo de R$ 1,00
         if (!valorInput || parseFloat(valorInput) < 1) {
@@ -194,6 +199,11 @@
             msgErro.style.display = 'block';
             document.getElementById('valor').focus();
             return false;
+        }
+
+        // Verifica se os campos obrigatórios do HTML5 foram preenchidos (Nome, Email, Telefone)
+        if (!form.checkValidity()) {
+            return true; // Deixa o HTML5 mostrar as mensagens padrão de "campo obrigatório"
         }
 
         // Estado de "Carregando" no botão

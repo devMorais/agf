@@ -15,12 +15,12 @@ class EnderecoModelo extends Modelo
 
     public function __construct()
     {
-        parent::__construct('endereco');
+        parent::__construct('enderecos');
     }
 
     /**
      * Busca o usuario pelo ID
-     * @return CategoriaModelo|null
+     * @return UsuarioModelo|null
      */
     public function usuario(): ?UsuarioModelo
     {
