@@ -382,4 +382,15 @@ class Helpers
 
         return (float) $valor;
     }
+
+
+    /**
+     * Gera um número de versão baseado na data de modificação do arquivo (Cache Busting)
+     * @param string $caminho
+     * @return string
+     */
+    public static function versaoArquivo(string $caminho): string
+    {
+        return file_exists($caminho) ? (string) filemtime($caminho) : '1';
+    }
 }

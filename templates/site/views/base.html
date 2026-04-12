@@ -17,8 +17,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.3/dist/jBox.all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url('templates/assets/css/estilos.css') }}">
-    <link rel="stylesheet" href="{{ url('templates/site/assets/css/site.css') }}">
+
+    <link rel="stylesheet"
+        href="{{ url('templates/assets/css/estilos.css') }}?v={{ versaoArquivo('templates/assets/css/estilos.css') }}">
+    <link rel="stylesheet"
+        href="{{ url('templates/site/assets/css/site.css') }}?v={{ versaoArquivo('templates/site/assets/css/site.css') }}">
+
     <link rel="shortcut icon" href="{{ url('templates/site/assets/img/LOGO.png') }}" />
 </head>
 
@@ -44,8 +48,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.3/dist/jBox.all.min.js"></script>
-    <script src="{{ url('templates/assets/js/scripts.js') }}"></script>
-    <script src="{{ url('templates/site/assets/js/site.js') }}"></script>
+
+    <script
+        src="{{ url('templates/assets/js/scripts.js') }}?v={{ versaoArquivo('templates/assets/js/scripts.js') }}"></script>
+    <script
+        src="{{ url('templates/site/assets/js/site.js') }}?v={{ versaoArquivo('templates/site/assets/js/site.js') }}"></script>
 </body>
 
 </html>

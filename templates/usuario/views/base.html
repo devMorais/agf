@@ -15,9 +15,14 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
     <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.3/dist/jBox.all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url('templates/assets/css/estilos.css') }}">
-    <link rel="stylesheet" href="{{ url('templates/usuario/assets/css/usuario.css') }}">
-    <link rel="stylesheet" href="{{ url('templates/site/assets/css/site.css') }}">
+
+    <link rel="stylesheet"
+        href="{{ url('templates/assets/css/estilos.css') }}?v={{ versaoArquivo('templates/assets/css/estilos.css') }}">
+    <link rel="stylesheet"
+        href="{{ url('templates/usuario/assets/css/usuario.css') }}?v={{ versaoArquivo('templates/usuario/assets/css/usuario.css') }}">
+    <link rel="stylesheet"
+        href="{{ url('templates/site/assets/css/site.css') }}?v={{ versaoArquivo('templates/site/assets/css/site.css') }}">
+
     <link rel="shortcut icon" href="{{ url('templates/assets/img/favicon.ico') }}" />
 </head>
 
@@ -40,8 +45,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.3/dist/jBox.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/maiconpinto/mask-js@1.11.2/dist/mask.min.js"></script>
-    <script src="{{ url('templates/assets/js/scripts.js') }}"></script>
-    <!-- <script src="{{ url('templates/usuario/assets/js/usuario.js') }}"></script> -->
+
+    <script
+        src="{{ url('templates/assets/js/scripts.js') }}?v={{ versaoArquivo('templates/assets/js/scripts.js') }}"></script>
 </body>
 
 </html>

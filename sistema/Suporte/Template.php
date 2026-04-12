@@ -96,6 +96,13 @@ class Template
                     return str_pad($string, $tamanho, $preenchimento, $tipo);
                 })
             ),
+
+        );
+
+        $this->twig->addFunction(
+            new \Twig\TwigFunction('versaoArquivo', function (string $caminho) {
+                return Helpers::versaoArquivo($caminho);
+            })
         );
     }
 }
