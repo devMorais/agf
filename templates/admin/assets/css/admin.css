@@ -1,347 +1,407 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+/* ================================================
+   PAINEL ADMINISTRATIVO - ASSOCIAÇÃO GRANDE FAMÍLIA
+   ================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Variáveis da marca */
+:root {
+    --admin-sidebar-bg: #0f172a;
+    --admin-sidebar-hover: rgba(255, 255, 255, 0.08);
+    --admin-sidebar-active: rgba(237, 88, 63, 0.2);
+    --admin-sidebar-border: rgba(255, 255, 255, 0.06);
+    --admin-accent: #ed583f;
+    --admin-accent-yellow: #ffc527;
+    --admin-bg: #f1f5f9;
+    --admin-card-bg: #ffffff;
+    --admin-text: #1e293b;
+    --admin-muted: #64748b;
+    --admin-border: #e2e8f0;
+}
 
 body {
-    font-family: "Inter", "Helvetica Neue", Arial;
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    -webkit-font-smoothing: antialiased;
 }
-.saudacao {
-    font-size: .7em
-}
+
+/* ================================================
+   SIDEBAR
+   ================================================ */
 .sidebar {
-    width: 300px;
+    width: 260px;
     position: fixed;
     left: 0;
     top: 0;
     height: 100%;
     z-index: 100;
-    transition: left 300ms;
-    background: var(--cor3);
+    transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1), left 280ms;
+    background: var(--admin-sidebar-bg);
     overflow-y: auto;
-}
-.form-label {
-    font-weight: bold;
-}
-
-.form-control {
-    margin-bottom: 15px;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 
-/* Estilização dos botões */
-.btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+/* Linha de destaque no topo da sidebar */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ed583f 0%, #ffc527 100%);
 }
 
-.btn-dark {
-    background-color: #343a40;
-    color: #fff;
-    border: none;
-}
-
-.btn-dark:hover {
-    background-color: #23272b;
-}
-
-/* Estilização do formulário em telas menores */
-@media (max-width: 768px) {
-    .col-md-6 {
-        width: 100%;
-    }
-}
-.sidebar::-webkit-scrollbar {
-    width: 15px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px var(--cor2);
-    border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-    background: var(--cor2);
-    border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: var(--cor1);
-}
-
+/* Logo na sidebar */
 .sidebarLogo {
-    padding: 1rem;
-    margin-bottom: 5px;
+    padding: 1.5rem 1.25rem 1rem;
 }
+
 .sidebarLogo a {
     color: #fff !important;
-}
-.logo {
-    max-width: 150px;
-    margin: auto !important
-}
-.sidebarTitulo {
-    color: var(--cor12);
-    font-size: .75rem;
+    text-decoration: none;
 }
 
-.sidebarMenu ul {
-    padding-left: .5rem;
+.logo {
+    max-width: 140px;
+    margin: auto !important;
 }
+
+/* Título de seção */
+.sidebarTitulo {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 1.25rem 1.4rem 0.4rem;
+}
+
+/* Menu items */
+.sidebarMenu ul { padding-left: 0; }
 
 .sidebarMenu li {
-    line-height: 40px;
-    margin-right: 10px;
-    list-style: none
+    list-style: none;
+    margin: 2px 8px;
 }
 
-.sidebarMenu li:hover {
-    background: var(--cor4);
-}
-
-.sidebarMenu a {
-    padding: .2rem;
-    display: block;
-    color: var(--cor14);
-    border-bottom: 1px solid var(--cor2);
-}
-
-.sidebarMenu a:hover {
-    border-bottom: 1px solid var(--cor2);
-    color: var(--cor8) !important;
-}
-
-.sidebarMenu i {
-    padding-right: .5rem;
-}
-
-
-header h2 {
+.sidebarMenu .nav-link {
+    padding: 0.65rem 1.1rem;
     display: flex;
     align-items: center;
+    color: rgba(255, 255, 255, 0.72) !important;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-header h2 label {
-    display: inline-block;
-    background: transparent;
-    padding-right: 0;
-    margin-right: 1rem;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    color: var(--cor2);
-    display: flex;
-    align-items: center;
-    justify-content: center !important;
-    cursor: pointer
+.sidebarMenu .nav-link:hover {
+    background-color: var(--admin-sidebar-hover);
+    color: #fff !important;
+    transform: translateX(3px);
 }
 
-header h2 i {
-    font-size: .8em;
+.sidebarMenu .nav-link.active {
+    background-color: var(--admin-sidebar-active);
+    color: #ed583f !important;
+    font-weight: 600;
 }
 
-#menu {
-    display: none;
+.sidebarMenu .nav-link i {
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 0.95rem;
 }
 
-#menu:checked+.sidebar {
-    width: 70px;
-}
-
-#menu:checked+.sidebar .sidebarLogo a span:last-child,
-#menu:checked+.sidebar li a span:last-child {
-    display: none;
-}
-
-#menu:checked~.conteudo {
-    margin-left: 70px;
-}
-
-#menu:checked+.sidebar .copyright {
-    display: none;
-}
-
-#menu:checked+.sidebar .sidebarLogo{
-    display: none;
-}
-#menu:checked+.sidebar .sidebarTitulo{
-    display: none;
-}
-
-#menu:checked~.conteudo header {
-    width: calc(100% - 70px);
-    left: 70px;
-}
-
-#menu:checked+.sidebar .sidebarMenu i {
-    font-size: 1.5em;
-    padding-left: .8rem;
-}
-
-.conteudo {
-    margin-left: 300px;
-    transition: margin-left 300ms;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 10px 0px 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    left: 300px;
-    top: 0;
-    width: calc(100% - 300px);
-    z-index: 100;
-    transition: left 300ms;
-}
-
-header label span {
-    font-size: 1.7rem;
-}
-
-header h2 {
-    color: #666;
-}
-
-main {
-    margin-top: 49px;
-    padding: 2rem 1.5rem;
-    background: #f5f7fb;
-    min-height: calc(100vh - 100px);
+.sidebarMenu hr {
+    border-color: var(--admin-sidebar-border);
+    margin: 0.5rem 1rem;
 }
 
 .copyright {
-    font-size: .8em;
+    font-size: 0.75em;
+    color: rgba(255,255,255,0.3);
+    padding: 1rem 1.4rem;
 }
 
-.capa {
-    max-width: 80px
+/* ================================================
+   CONTEÚDO PRINCIPAL
+   ================================================ */
+.conteudo {
+    margin-left: 260px;
+    transition: margin-left 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 100vh;
 }
 
-.pagination a{
-    color: black;
-    background: #eee
+/* ================================================
+   HEADER DO ADMIN
+   ================================================ */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: var(--admin-card-bg);
+    border-bottom: 1px solid var(--admin-border);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    position: fixed;
+    left: 260px;
+    top: 0;
+    width: calc(100% - 260px);
+    z-index: 99;
+    transition: left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms;
 }
-.active>.page-link {
-    background: black;
-    border-color: black
+
+header h2 {
+    display: flex;
+    align-items: center;
+    color: var(--admin-text);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
 }
+
+header h2 label {
+    background: var(--admin-bg);
+    padding: 0;
+    height: 36px;
+    width: 36px;
+    border-radius: 9px;
+    color: var(--admin-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 0.9rem;
+    transition: all 0.2s;
+    border: 1px solid var(--admin-border);
+}
+
+header h2 label:hover {
+    background: var(--admin-accent);
+    color: white;
+    border-color: var(--admin-accent);
+}
+
+header h2 i { font-size: 0.85rem; }
+
+.saudacao {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--admin-muted);
+}
+
+#menu { display: none; }
+
+/* Recolher sidebar via checkbox */
+#menu:checked + .sidebar { width: 68px; }
+
+#menu:checked + .sidebar .sidebarLogo a span:last-child,
+#menu:checked + .sidebar li a span:last-child,
+#menu:checked + .sidebar .sidebarTitulo,
+#menu:checked + .sidebar .sidebarLogo,
+#menu:checked + .sidebar .copyright { display: none; }
+
+#menu:checked ~ .conteudo { margin-left: 68px; }
+#menu:checked ~ .conteudo header { width: calc(100% - 68px); left: 68px; }
+
+#menu:checked + .sidebar .sidebarMenu .nav-link {
+    justify-content: center;
+    padding: 0.75rem;
+}
+
+#menu:checked + .sidebar .sidebarMenu i {
+    font-size: 1.15rem;
+    width: auto;
+    margin: 0;
+}
+
+/* ================================================
+   ÁREA PRINCIPAL (MAIN)
+   ================================================ */
+main {
+    margin-top: 57px;
+    padding: 1.75rem 1.75rem;
+    min-height: calc(100vh - 57px);
+}
+
+/* ================================================
+   CARDS DO DASHBOARD
+   ================================================ */
+.stat-card {
+    background: var(--admin-card-bg);
+    border: none;
+    border-radius: 1.1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    padding: 1.4rem 1.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 1.1rem 0 0 1.1rem;
+}
+
+.stat-card.card-green::before  { background: #22c55e; }
+.stat-card.card-blue::before   { background: #3b82f6; }
+.stat-card.card-orange::before { background: var(--admin-accent); }
+.stat-card.card-yellow::before { background: var(--admin-accent-yellow); }
+.stat-card.card-dark::before   { background: #334155; }
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.stat-icon.bg-green  { background: rgba(34, 197, 94, 0.12);  color: #16a34a; }
+.stat-icon.bg-blue   { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+.stat-icon.bg-orange { background: rgba(237, 88, 63, 0.12);  color: var(--admin-accent); }
+.stat-icon.bg-yellow { background: rgba(255, 197, 39, 0.15); color: #b45309; }
+.stat-icon.bg-dark   { background: rgba(51, 65, 85, 0.10);   color: #334155; }
+
+/* ================================================
+   TABELAS
+   ================================================ */
+.form-label { font-weight: 600; font-size: 0.88rem; color: var(--admin-muted); }
+.form-control { margin-bottom: 0; }
 
 table.dataTable tbody th,
-table.dataTable tbody td {
-    vertical-align: middle;
-}
-table.dataTable tbody td img {
-    display: block;
-}
+table.dataTable tbody td { vertical-align: middle; }
+
+table.dataTable tbody td img { display: block; }
 
 .thumb {
-    max-width: 80px !important;
-    border: 1px solid #999
+    max-width: 70px !important;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+    object-fit: cover;
 }
 
-@media screen and (max-width: 1200px) {
-    .sidebar {
-        width: 70px;
-    }
+.capa { max-width: 70px; }
+
+/* Paginação */
+.pagination a {
+    color: var(--admin-text);
+    background: #eee;
+}
+
+.active > .page-link {
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+}
+
+/* ================================================
+   FORMULÁRIOS
+   ================================================ */
+.btn {
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.error-border  { border: 1.5px solid #ef4444 !important; }
+.success-border { border: 1.5px solid #22c55e !important; }
+
+.placeholder-option { color: #ef4444; font-weight: bold; }
+.user-code { font-size: 0.88rem; color: #334155; }
+.no-user, .no-input { font-size: 0.88rem; color: #94a3b8; }
+
+/* ================================================
+   RESPONSIVIDADE
+   ================================================ */
+@media screen and (max-width: 1280px) {
+    .sidebar { width: 68px; }
+
     .sidebar .sidebarLogo span:last-child,
-    .sidebar li a span:last-child {
-        display: none;
+    .sidebar li a span:last-child,
+    .sidebar .sidebarTitulo,
+    .sidebar .sidebarLogo,
+    .sidebar .copyright { display: none; }
+
+    .sidebarMenu .nav-link {
+        justify-content: center;
+        padding: 0.75rem;
     }
-    .sidebarMenu i {
-        font-size: 1.3em;
-        padding-left: .8rem;
-    }
-    .conteudo {
-        margin-left: 70px;
-    }
-    .conteudo header {
-        width: calc(100% - 70px);
-        left: 70px;
-    }
+
+    .sidebarMenu i { font-size: 1.15rem; width: auto; margin: 0; }
+
+    .conteudo { margin-left: 68px; }
+    header { width: calc(100% - 68px); left: 68px; }
+
     .sidebar:hover {
-        width: 300px;
+        width: 260px;
         z-index: 200;
     }
 
+    .sidebar:hover .sidebarLogo,
+    .sidebar:hover .sidebarTitulo { display: block; }
+
     .sidebar:hover .sidebarLogo span:last-child,
-    .sidebar:hover li a span:last-child {
-        display: inline;
+    .sidebar:hover li a span:last-child { display: inline; }
+
+    .sidebar:hover .sidebarMenu .nav-link {
+        justify-content: flex-start;
+        padding: 0.65rem 1.1rem;
     }
 
-    .sidebar:hover li i {
-        font-size: 1em;
-    }
-
-    .sidebarLogo,.sidebarTitulo {
-        display: none
-    }
-
-
-}
-
-@media screen and (max-width: 992px) {
+    .sidebar:hover .sidebarMenu i { font-size: 0.95rem; width: 22px; }
 }
 
 @media screen and (max-width: 768px) {
-    .sidebar {
-        left: -100% !important;
-    }
+    .sidebar { left: -100% !important; width: 260px; }
+    .conteudo { width: 100%; margin-left: 0; }
+    header { width: 100% !important; left: 0 !important; }
 
-    .conteudo {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    header {
-        width: 100% !important;
+    #menu:checked + .sidebar {
         left: 0 !important;
+        z-index: 200;
+        width: 260px;
     }
 
-    #menu:checked+.sidebar {
-        left: 0 !important;
-        z-index: 100;
-        width: 300px;
+    #menu:checked ~ .conteudo { margin-left: 0 !important; }
+
+    #menu:checked + .sidebar .sidebarLogo,
+    #menu:checked + .sidebar .sidebarTitulo,
+    #menu:checked + .sidebar .copyright { display: block; }
+
+    #menu:checked + .sidebar li a span:last-child,
+    #menu:checked + .sidebar .sidebarLogo a span:last-child { display: inline; }
+
+    #menu:checked + .sidebar .sidebarMenu .nav-link {
+        justify-content: flex-start;
+        padding: 0.65rem 1.1rem;
     }
 
-    #menu:checked~.conteudo {
-        margin-left: 0 !important;
-    }
-
-    #menu:checked+.sidebar .sidebarLogo h2 span:last-child,
-    #menu:checked+.sidebar li a span:last-child {
-        display: inline;
-    }
-    #menu:checked+.sidebar .sidebarLogo{
-        display: block
-    }
-    #menu:checked+.sidebar .sidebarTitulo{
-        display: block
-    }
-
-}
-
-@media screen and (max-width: 576px) {
-
-}
-
-.error-border {
-    border: 1px solid red;
-}
-.success-border {
-    border: 1px solid green;
-}
-
-.placeholder-option {
-    color: red;
-    font-weight: bold;
-}
-
-.user-code {
-    font-size: 0.9em;
-    color: #333;
-}
-
-.no-user, .no-input {
-    font-size: 0.9em;
-    color: #666;
+    #menu:checked + .sidebar .sidebarMenu i { font-size: 0.95rem; width: 22px; }
 }

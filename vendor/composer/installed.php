@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'ceodevmorais/siteong',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'b7fc0d6a15f36f243ed3567c0dacc36541fb9e16',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'ceodevmorais/siteong' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'b7fc0d6a15f36f243ed3567c0dacc36541fb9e16',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

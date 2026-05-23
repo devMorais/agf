@@ -1,215 +1,831 @@
-{% extends 'base.html' %}
+{% extends 'base_checkout.html' %}
 {% block conteudo %}
 
-<style>
+<div class="checkout-layout">
 
-</style>
+    <!-- ============================================
+         PAINEL ESQUERDO — IMPACTO
+         ============================================ -->
+    <aside class="impact-side">
 
-<div class="container my-5">
-    <div class="row g-4 align-items-stretch">
+        <!-- Ícone principal -->
+        <div class="impact-icon-wrap">
+            <div class="impact-icon-ring">
+                <i class="fas fa-hands-holding-heart"></i>
+            </div>
+        </div>
 
-        <div class="col-lg-5 mb-4 mb-lg-0 order-2 order-lg-1">
-            <div class="info-panel p-5 rounded-4 h-100 d-flex flex-column justify-content-center shadow-sm">
-                <div class="mb-4 position-relative z-1">
-                    <span class="badge text-uppercase tracking-wide mb-3"
-                        style="background: rgba(237,88,63,0.1); color: var(--cor-laranja); padding: 0.6rem 1rem;">
-                        Associação Grande Família
-                    </span>
-                    <h2 class="fw-bold display-5 mb-3 text-dark">Sua ajuda <span class="text-gradient">transforma</span>
-                        realidades!</h2>
-                    <p class="lead text-muted" style="font-style: italic; font-size: 1.15rem;">
-                        "Realizando sonhos, construindo um futuro melhor para todos."
+        <!-- Texto principal -->
+        <p class="impact-label">Associação Grande Família</p>
+        <h2 class="impact-heading">
+            Sua ajuda <em>transforma</em><br>realidades
+        </h2>
+        <p class="impact-body">
+            Cada real doado chega diretamente às mãos de quem mais precisa.
+            Levamos alimentos, saúde e esperança com total transparência.
+        </p>
+
+        <!-- O que cada valor representa -->
+        <div class="impact-cards">
+            <div class="impact-card">
+                <span class="ic-value">R$ 15</span>
+                <span class="ic-desc">Ajuda de custo para uma família em crise</span>
+            </div>
+            <div class="impact-card">
+                <span class="ic-value">R$ 30</span>
+                <span class="ic-desc">Apoio a consulta médica ou exame básico</span>
+            </div>
+            <div class="impact-card featured">
+                <span class="ic-value">R$ 50</span>
+                <span class="ic-desc">Meia cesta básica para uma semana inteira</span>
+            </div>
+            <div class="impact-card">
+                <span class="ic-value">R$ 100</span>
+                <span class="ic-desc">Cesta completa para alimentar por 2 semanas</span>
+            </div>
+        </div>
+
+        <!-- Selos -->
+        <div class="impact-seals">
+            <span><i class="fas fa-shield-alt"></i> 100% seguro</span>
+            <span><i class="fas fa-lock"></i> InfinitePay</span>
+            <span><i class="fas fa-certificate"></i> ONG oficial</span>
+        </div>
+
+    </aside>
+
+    <!-- ============================================
+         PAINEL DIREITO — FORMULÁRIO
+         ============================================ -->
+    <main class="form-side">
+
+        {{ flash() }}
+
+        <div class="form-side-inner">
+
+            <!-- Cabeçalho do form -->
+            <div class="fs-header">
+                <h1 class="fs-title">Fazer uma doação</h1>
+                <p class="fs-sub">Escolha o valor e preencha seus dados para continuar</p>
+            </div>
+
+            <form action="{{ url('doar/processar') }}" method="POST" id="formDoacao" novalidate>
+
+                <!-- ── VALOR ── -->
+                <div class="value-section">
+                    <label class="section-label">Valor da doação</label>
+
+                    <div class="value-grid" role="group" aria-label="Valores predefinidos">
+                        <button type="button" class="vbtn" data-val="15" aria-pressed="false">
+                            <span class="vbtn-amount">R$ 15</span>
+                            <span class="vbtn-label">Ajuda de Custo</span>
+                        </button>
+                        <button type="button" class="vbtn" data-val="30" aria-pressed="false">
+                            <span class="vbtn-amount">R$ 30</span>
+                            <span class="vbtn-label">Apoio à Saúde</span>
+                        </button>
+                        <button type="button" class="vbtn popular" data-val="50" aria-pressed="false">
+                            <span class="vbtn-popular-tag">Popular</span>
+                            <span class="vbtn-amount">R$ 50</span>
+                            <span class="vbtn-label">Meia Cesta</span>
+                        </button>
+                        <button type="button" class="vbtn" data-val="100" aria-pressed="false">
+                            <span class="vbtn-amount">R$ 100</span>
+                            <span class="vbtn-label">Cesta Completa</span>
+                        </button>
+                    </div>
+
+                    <div class="custom-value-wrap" id="customValorWrap">
+                        <span class="cv-prefix">R$</span>
+                        <input type="number"
+                               id="valor" name="valor"
+                               min="1" step="0.01"
+                               placeholder="Ou digite outro valor"
+                               inputmode="decimal"
+                               autocomplete="off"
+                               aria-label="Valor personalizado">
+                    </div>
+                    <p class="field-err" id="erroValor">
+                        <i class="fas fa-exclamation-circle"></i> Informe um valor mínimo de R$ 1,00.
                     </p>
                 </div>
 
-                <p class="mb-4 text-muted" style="font-size: 1.1rem; line-height: 1.7;">
-                    Sua contribuição é o motor que nos permite levar alimentos, promover o bem-estar social, educação e
-                    saúde para as famílias da nossa comunidade.
-                </p>
+                <!-- ── DADOS PESSOAIS ── -->
+                <div class="fs-section">
+                    <label class="section-label">Seus dados</label>
 
-                <hr class="border-dark opacity-10 mb-4">
+                    <div class="field-group">
+                        <label class="field-label" for="nome">Nome completo <span aria-hidden="true">*</span></label>
+                        <input type="text" id="nome" name="nome"
+                               class="field-input" placeholder="Como devemos te chamar?"
+                               autocomplete="name" required>
+                        <p class="field-err" id="erroNome">
+                            <i class="fas fa-exclamation-circle"></i> Informe seu nome completo.
+                        </p>
+                    </div>
 
-                <ul class="list-custom position-relative z-1">
-                    <li>
-                        <i class="fas fa-heart"></i>
-                        <span>Apoio direto a famílias em vulnerabilidade social</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-box-open"></i>
-                        <span>Distribuição contínua de cestas básicas e mantimentos</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-user-md"></i>
-                        <span>Inclusão social e encaminhamento para a rede de saúde</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="col-lg-7 order-1 order-lg-2">
-            {{ flash() }}
-            <div class="card donation-card">
-                <div class="card-body p-4 p-md-5">
-                    <h3 class="fw-bold mb-4 text-dark text-center">Escolha como apoiar</h3>
-
-                    <form action="{{ url('doar/processar') }}" method="POST" id="formDoacao" novalidate>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-6 col-md-3">
-                                <div class="value-btn text-center" onclick="selecionarValor(this, 15)">
-                                    <b>R$ 15</b>
-                                    <small>Ajuda de Custo</small>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="value-btn text-center" onclick="selecionarValor(this, 30)">
-                                    <b>R$ 30</b>
-                                    <small>Apoio à Saúde</small>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="value-btn text-center" onclick="selecionarValor(this, 50)">
-                                    <b>R$ 50</b>
-                                    <small>Meia Cesta</small>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <div class="value-btn text-center" onclick="selecionarValor(this, 100)">
-                                    <b>R$ 100</b>
-                                    <small>Cesta Completa</small>
-                                </div>
-                            </div>
+                    <div class="fields-row">
+                        <div class="field-group">
+                            <label class="field-label" for="email">E-mail <span aria-hidden="true">*</span></label>
+                            <input type="email" id="email" name="email"
+                                   class="field-input" placeholder="seu@email.com"
+                                   autocomplete="email" required>
+                            <p class="field-err" id="erroEmail">
+                                <i class="fas fa-exclamation-circle"></i> E-mail inválido.
+                            </p>
                         </div>
-
-                        <div class="mb-4">
-                            <label for="valor"
-                                class="form-label text-muted fw-bold small text-uppercase tracking-wide">Ou digite outro
-                                valor</label>
-                            <div class="custom-input-wrapper d-flex align-items-center">
-                                <span class="me-2">R$</span>
-                                <input type="number" class="form-control flex-grow-1" id="valor" name="valor" min="1"
-                                    step="0.01" placeholder="0,00" oninput="limparSelecao()">
-                            </div>
-                            <small class="text-muted mt-2 d-block" id="msgErroValor"
-                                style="display:none; color: var(--cor-laranja) !important; font-weight: 600;">
-                                <i class="fas fa-exclamation-circle"></i> O valor mínimo é de R$ 1,00.
-                            </small>
+                        <div class="field-group">
+                            <label class="field-label" for="telefone">WhatsApp <span class="optional">(opcional)</span></label>
+                            <input type="tel" id="telefone" name="telefone"
+                                   class="field-input" placeholder="(00) 00000-0000"
+                                   autocomplete="tel" inputmode="tel">
                         </div>
-
-                        <div class="bg-light rounded-4 p-4 mb-4 border" style="border-color: #edf2f7 !important;">
-                            <h5 class="fw-bold text-dark mb-3 fs-6"><i class="fas fa-user-circle me-2"></i>Seus Dados
-                            </h5>
-
-                            <div class="mb-3">
-                                <label for="nome" class="form-label small fw-bold text-muted">Nome Completo</label>
-                                <input type="text" class="form-control" id="nome" name="nome"
-                                    placeholder="Digite seu nome" required>
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label small fw-bold text-muted">E-mail</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="seu@email.com" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="telefone" class="form-label small fw-bold text-muted">Celular /
-                                        WhatsApp</label>
-                                    <input type="tel" class="form-control" id="telefone" name="telefone"
-                                        placeholder="(00) 00000-0000" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-light rounded-4 p-4 mb-4 border" style="border-color: #edf2f7 !important;">
-                            <div class="form-check ps-0 d-flex align-items-center">
-                                <div class="ps-1">
-                                    <input class="form-check-input fs-5 ms-0 mt-0" type="checkbox" id="anonimo"
-                                        name="anonimo" style="border-color: #cbd5e0;">
-                                </div>
-                                <label class="form-check-label text-muted small ms-3 fw-medium" for="anonimo">
-                                    Desejo que minha doação permaneça anônima no mural de doadores.
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-donate w-100" id="btnDoar">
-                            <i class="fas fa-heart me-2"></i> Doar Agora (PIX / Cartão)
-                        </button>
-
-                    </form>
-
-                    <div class="text-center mt-4">
-                        <span class="badge bg-light text-muted border border-light p-2 px-3 rounded-pill fw-normal">
-                            <i class="fas fa-lock text-success me-1"></i> Ambiente 100% seguro processado via <strong
-                                class="text-dark">InfinitePay</strong>
-                        </span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-    </div>
-</div>
+                <!-- ── OPÇÃO ANÔNIMO ── -->
+                <label class="anon-check" for="anonimo">
+                    <input type="checkbox" id="anonimo" name="anonimo">
+                    <span class="anon-box"></span>
+                    <span class="anon-text">
+                        <strong>Manter doação anônima</strong>
+                        <em>Seu nome não aparecerá no mural de doadores</em>
+                    </span>
+                </label>
 
-<script>
-    // Função para alterar o visual dos botões pré-definidos ao clicar
-    function selecionarValor(elemento, valor) {
-        const inputValor = document.getElementById('valor');
-        inputValor.value = valor;
+                <!-- ── BOTÃO ── -->
+                <button type="submit" class="donate-btn" id="btnDoar">
+                    <span id="btnConteudo">
+                        <i class="fas fa-heart"></i>
+                        Fazer minha doação
+                        <i class="fas fa-arrow-right btn-arrow"></i>
+                    </span>
+                </button>
 
-        limparSelecao(); // Limpa as cores dos outros botões
+                <!-- Selos abaixo do botão -->
+                <div class="form-seals">
+                    <span><i class="fas fa-lock text-success"></i> Conexão segura (SSL)</span>
+                    <span><i class="fas fa-credit-card" style="color:#3b82f6;"></i> PIX ou Cartão</span>
+                    <span><i class="fas fa-shield-alt" style="color:#94a3b8;"></i> InfinitePay</span>
+                </div>
 
-        // Destaca apenas o botão clicado com as cores da identidade visual
-        elemento.style.borderColor = 'var(--cor-laranja)';
-        elemento.style.backgroundColor = 'rgba(237, 88, 63, 0.05)'; // Laranja bem clarinho
+            </form>
 
-        // Pinta o texto de dentro de laranja
-        const textoB = elemento.querySelector('b');
-        const textoSmall = elemento.querySelector('small');
-        if (textoB) textoB.style.color = 'var(--cor-laranja)';
-        if (textoSmall) textoSmall.style.color = 'var(--cor-laranja)';
+        </div><!-- /form-side-inner -->
+    </main>
 
-        // Esconde mensagem de erro se houver
-        document.getElementById('msgErroValor').style.display = 'none';
+</div><!-- /checkout-layout -->
+
+
+<style>
+/* ── Layout geral ── */
+.checkout-layout {
+    display: flex !important;
+    min-height: calc(100vh - 57px);
+    width: 100%;
+}
+
+/* ── Painel esquerdo ── */
+.impact-side {
+    flex: 0 0 42%;
+    background: linear-gradient(160deg, #0c1629 0%, #172038 55%, #1a2540 100%);
+    padding: 3rem 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: sticky;
+    top: 57px;
+    height: calc(100vh - 57px);
+    overflow: hidden;
+    color: white;
+}
+
+/* Glow decorativo de fundo */
+.impact-side::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(237,88,63,0.14) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Ícone central */
+.impact-icon-wrap { margin-bottom: 1.75rem; }
+
+.impact-icon-ring {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, rgba(237,88,63,0.25), rgba(255,197,39,0.15));
+    border: 1px solid rgba(255,197,39,0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--cor-amarelo);
+    box-shadow: 0 8px 24px rgba(237,88,63,0.2);
+}
+
+.impact-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--cor-amarelo);
+    margin-bottom: 0.9rem;
+}
+
+.impact-heading {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    color: white;
+    margin-bottom: 1.1rem;
+}
+
+.impact-heading em {
+    font-style: normal;
+    background: linear-gradient(90deg, #ed583f, #ffc527);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.impact-body {
+    color: #94a3b8;
+    font-size: 0.93rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+/* Cards de impacto */
+.impact-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    margin-bottom: 2rem;
+}
+
+.impact-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+}
+
+.impact-card.featured {
+    background: rgba(237,88,63,0.15);
+    border-color: rgba(237,88,63,0.3);
+}
+
+.ic-value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.impact-card.featured .ic-value { color: var(--cor-amarelo); }
+
+.ic-desc {
+    font-size: 0.74rem;
+    color: #64748b;
+    line-height: 1.45;
+}
+
+.impact-card.featured .ic-desc { color: #94a3b8; }
+
+/* Selos do painel */
+.impact-seals {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: auto;
+}
+
+.impact-seals span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.impact-seals span i {
+    font-size: 0.8rem;
+    color: var(--cor-amarelo);
+}
+
+/* ── Painel direito (formulário) ── */
+.form-side {
+    flex: 1;
+    min-width: 0;
+    background: #f8fafc;
+    overflow-y: auto;
+    max-height: calc(100vh - 57px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.form-side-inner {
+    width: 100%;
+    max-width: 520px;
+    padding: 0 2.5rem;
+}
+
+/* Cabeçalho */
+.fs-header { margin-bottom: 2rem; }
+
+.fs-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.3rem;
+}
+
+.fs-sub {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Seção genérica */
+.fs-section { margin-bottom: 1.5rem; }
+
+.section-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    margin-bottom: 0.9rem;
+}
+
+/* ── Botões de valor ── */
+.value-section { margin-bottom: 1.5rem; }
+
+.value-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.55rem;
+    margin-bottom: 0.9rem;
+    padding-top: 0.6rem;
+}
+
+.vbtn {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 0.4rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.vbtn:hover {
+    border-color: rgba(237,88,63,0.5);
+    background: rgba(237,88,63,0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(237,88,63,0.12);
+}
+
+.vbtn.active {
+    border-color: var(--cor-laranja);
+    background: rgba(237,88,63,0.04);
+    box-shadow: 0 0 0 3px rgba(237,88,63,0.14);
+}
+
+.vbtn.active .vbtn-amount,
+.vbtn.active .vbtn-label { color: var(--cor-laranja); }
+
+.vbtn-amount {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #1e293b;
+    transition: color 0.18s;
+    line-height: 1;
+}
+
+.vbtn-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: color 0.18s;
+}
+
+/* Tag "Popular" */
+.vbtn-popular-tag {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cor-laranja);
+    color: white;
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Input valor personalizado */
+.custom-value-wrap {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s;
+}
+
+.custom-value-wrap:focus-within {
+    border-color: var(--cor-amarelo);
+    box-shadow: 0 0 0 3px rgba(255,197,39,0.15);
+}
+
+.custom-value-wrap.input-active { border-color: var(--cor-laranja); }
+
+.cv-prefix {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.custom-value-wrap input {
+    border: none;
+    background: transparent;
+    box-shadow: none !important;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--cor-laranja);
+    width: 100%;
+    outline: none;
+}
+
+.custom-value-wrap input::placeholder {
+    color: #cbd5e0;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* ── Campos do formulário ── */
+.field-group { margin-bottom: 1rem; }
+
+.field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.field-label .optional {
+    font-weight: 400;
+    text-transform: none;
+    color: #94a3b8;
+    letter-spacing: 0;
+    font-size: 0.74rem;
+}
+
+.field-input {
+    width: 100%;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1e293b;
+    background: white;
+    transition: all 0.2s;
+    outline: none;
+    display: block;
+}
+
+.field-input:focus {
+    border-color: var(--cor-amarelo);
+    box-shadow: 0 0 0 3px rgba(255,197,39,0.15);
+}
+
+.field-input.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.10);
+}
+
+.fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+}
+
+/* ── Erro inline ── */
+.field-err {
+    display: none;
+    font-size: 0.78rem;
+    color: #ef4444;
+    font-weight: 600;
+    margin-top: 0.35rem;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.field-err.show { display: flex; }
+
+/* ── Checkbox anônimo ── */
+.anon-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    user-select: none;
+}
+
+.anon-check:hover { border-color: #cbd5e0; }
+
+.anon-check input[type="checkbox"] {
+    display: none;
+}
+
+.anon-box {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e0;
+    border-radius: 6px;
+    background: white;
+    margin-top: 2px;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anon-box::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.65rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.anon-check input:checked ~ .anon-box {
+    background: var(--cor-laranja);
+    border-color: var(--cor-laranja);
+}
+
+.anon-check input:checked ~ .anon-box::after { opacity: 1; }
+
+.anon-text strong {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.15rem;
+}
+
+.anon-text em {
+    font-style: normal;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+/* ── Botão principal ── */
+.donate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ed583f 0%, #d94a34 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 1.1rem 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 24px rgba(237,88,63,0.30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    letter-spacing: 0.2px;
+    margin-bottom: 1rem;
+}
+
+.donate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(237,88,63,0.40);
+}
+
+.donate-btn:disabled {
+    opacity: 0.75;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.btn-arrow { font-size: 0.85rem; opacity: 0.8; }
+
+/* Selos abaixo do botão */
+.form-seals {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-seals span {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ── Responsivo ── */
+@media (max-width: 991px) {
+    .checkout-layout { flex-direction: column; }
+
+    .impact-side {
+        position: relative;
+        height: auto;
+        padding: 1.25rem 1.25rem 1rem;
+        flex-direction: column;
+        gap: 0.2rem;
+        flex-shrink: 0;
     }
 
-    // Função para resetar os botões se o usuário digitar um valor manual
-    function limparSelecao() {
-        let botoes = document.querySelectorAll('.value-btn');
-        botoes.forEach(function (btn) {
-            btn.style.borderColor = '#edf2f7';
-            btn.style.backgroundColor = '#fff';
+    .impact-icon-wrap { display: none; }
+    .impact-heading { font-size: 1.3rem; margin-bottom: 0; line-height: 1.3; }
+    .impact-heading br { display: none; }
+    .impact-body, .impact-cards, .impact-seals { display: none; }
+    .impact-label { margin-bottom: 0.15rem; }
 
-            const textoB = btn.querySelector('b');
-            const textoSmall = btn.querySelector('small');
-            if (textoB) textoB.style.color = 'var(--cor-texto)';
-            if (textoSmall) textoSmall.style.color = '#718096';
+    .form-side {
+        max-height: none !important;
+        overflow-y: visible !important;
+        display: block;
+        padding: 1.5rem 0 3rem;
+        width: 100%;
+    }
+
+    .form-side-inner {
+        max-width: 100%;
+        padding: 0 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .value-grid {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 1.5rem;
+    }
+    .fields-row { grid-template-columns: 1fr; }
+    .form-side-inner { padding: 0 1rem; }
+    .impact-side { padding: 1rem; }
+    .impact-heading { font-size: 1.15rem; }
+    .impact-label { font-size: 0.65rem; }
+}
+</style>
+
+<script>
+(function () {
+    'use strict';
+
+    const input    = document.getElementById('valor');
+    const wrapBox  = document.getElementById('customValorWrap');
+    const btnDoar  = document.getElementById('btnDoar');
+    const btnConteudo = document.getElementById('btnConteudo');
+    const vBtns    = document.querySelectorAll('.vbtn');
+
+    // ── Pré-seleciona R$50 por padrão ──
+    (function () {
+        var defaultBtn = document.querySelector('.vbtn[data-val="50"]');
+        if (defaultBtn) {
+            defaultBtn.classList.add('active');
+            defaultBtn.setAttribute('aria-pressed', 'true');
+            input.value = '50';
+        }
+    }());
+
+    // ── Selecionar valor por botão ──
+    vBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            vBtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+            this.classList.add('active');
+            this.setAttribute('aria-pressed','true');
+            input.value = this.dataset.val;
+            wrapBox.classList.remove('input-active');
+            document.getElementById('erroValor').classList.remove('show');
+        });
+        btn.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
+    });
+
+    // ── Digitou valor manual → deseleciona botões ──
+    input.addEventListener('input', function () {
+        vBtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+        wrapBox.classList.toggle('input-active', this.value.length > 0);
+        document.getElementById('erroValor').classList.remove('show');
+    });
+
+    // ── Máscara de telefone ──
+    var tel = document.getElementById('telefone');
+    if (tel) {
+        tel.addEventListener('input', function () {
+            var n = this.value.replace(/\D/g,'').slice(0,11);
+            if      (n.length > 6) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7);
+            else if (n.length > 2) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2);
+            else if (n.length > 0) this.value = '(' + n;
         });
     }
 
-    // Intercepta o envio do formulário para validar e mostrar loading
-    document.getElementById('formDoacao').addEventListener('submit', function (e) {
-        const valorInput = document.getElementById('valor').value;
-        const msgErro = document.getElementById('msgErroValor');
-        const btnDoar = document.getElementById('btnDoar');
-        const form = document.getElementById('formDoacao');
-
-        // Validação no front-end: mínimo de R$ 1,00
-        if (!valorInput || parseFloat(valorInput) < 1) {
-            e.preventDefault();
-            msgErro.style.display = 'block';
-            document.getElementById('valor').focus();
-            return false;
+    // ── Limpa erros ao corrigir ──
+    document.getElementById('nome').addEventListener('input', function () {
+        if (this.value.trim().length >= 3) {
+            this.classList.remove('error');
+            document.getElementById('erroNome').classList.remove('show');
         }
-
-        // Verifica se os campos obrigatórios do HTML5 foram preenchidos (Nome, Email, Telefone)
-        if (!form.checkValidity()) {
-            return true; // Deixa o HTML5 mostrar as mensagens padrão de "campo obrigatório"
-        }
-
-        // Estado de "Carregando" no botão
-        btnDoar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Redirecionando para pagamento...';
-        btnDoar.disabled = true;
     });
+    document.getElementById('email').addEventListener('input', function () {
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value.trim())) {
+            this.classList.remove('error');
+            document.getElementById('erroEmail').classList.remove('show');
+        }
+    });
+
+    // ── Validação e submit ──
+    document.getElementById('formDoacao').addEventListener('submit', function (e) {
+        var ok = true;
+
+        // Valor
+        var v = parseFloat(input.value);
+        if (!input.value || isNaN(v) || v < 1) {
+            e.preventDefault();
+            document.getElementById('erroValor').classList.add('show');
+            input.focus();
+            ok = false;
+        }
+
+        // Nome
+        var nome = document.getElementById('nome');
+        if (nome.value.trim().length < 3) {
+            e.preventDefault();
+            nome.classList.add('error');
+            document.getElementById('erroNome').classList.add('show');
+            if (ok) nome.focus();
+            ok = false;
+        }
+
+        // Email
+        var em = document.getElementById('email');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) {
+            e.preventDefault();
+            em.classList.add('error');
+            document.getElementById('erroEmail').classList.add('show');
+            if (ok) em.focus();
+            ok = false;
+        }
+
+        if (!ok) return;
+
+        // Loading no botão
+        btnDoar.disabled = true;
+        btnConteudo.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecionando...';
+    });
+
+}());
 </script>
 
 {% endblock %}

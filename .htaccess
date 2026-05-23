@@ -1,19 +1,72 @@
-#Bloqueia a listagem dos diretórios sem um index padrão
-Options -indexes
+# ============================================================
+# Segurança e Reescrita de URL - Associação Grande Família
+# ============================================================
 
-#Ativa o modo de reescrita
+# Bloqueia listagem de diretórios sem index
+Options -Indexes
+
+# ============================================================
+# HEADERS DE SEGURANÇA
+# ============================================================
+<IfModule mod_headers.c>
+    # Previne que o site seja embutido em iframes de outros domínios (Clickjacking)
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Previne que o browser "adivinhe" o tipo de conteúdo (MIME sniffing)
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Ativa proteção XSS no Internet Explorer/Edge legado
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Força HTTPS em produção (apenas para respostas HTTPS)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
+    # Referrer Policy: envia referrer apenas para o mesmo site
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Remove header que revela a versão do servidor
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================================
+# REESCRITA DE URL
+# ============================================================
+
 RewriteEngine On
 
-#Define a url base
-#RewriteBase /blog
+# Define a url base
 RewriteBase /
 
-#Define a condição sob a qual a reescrita ocorrera
+# Condições: não reescreve arquivos e diretórios que existem
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-l
 
-#Define que será aplicado uma regra de reescrita
-RewriteRule ^(.*)$ index.php/$1
+# Todas as rotas passam pelo index.php
+RewriteRule ^(.*)$ index.php/$1 [L]
 
+# ============================================================
+# CACHE DE ASSETS ESTÁTICOS
+# ============================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                  "access plus 1 month"
+    ExpiresByType application/javascript    "access plus 1 month"
+    ExpiresByType image/png                 "access plus 3 months"
+    ExpiresByType image/jpeg                "access plus 3 months"
+    ExpiresByType image/gif                 "access plus 3 months"
+    ExpiresByType image/webp                "access plus 3 months"
+    ExpiresByType image/svg+xml             "access plus 1 month"
+    ExpiresByType font/woff2                "access plus 6 months"
+    ExpiresByType application/font-woff2    "access plus 6 months"
+</IfModule>
 
+# ============================================================
+# COMPRESSÃO GZIP
+# ============================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>

@@ -1,13 +1,19 @@
 $(document).ready(function () {
-    $('[data-toggle="tooltip"]').tooltip();
+    function initTooltips(ctx) {
+        (ctx || document).querySelectorAll('[data-bs-toggle="tooltip"],[data-toggle="tooltip"],[tooltip="tooltip"]').forEach(function (el) {
+            new bootstrap.Tooltip(el, { trigger: 'hover' });
+        });
+    }
+    initTooltips();
+
     var url = $('table').attr('url');
 
     $.extend($.fn.dataTable.defaults, {
         language: {
             url: url + 'templates/admin/assets/js/pt-BR.json'
         },
-        initComplete: function (settings, json) {
-            $('[tooltip="tooltip"]').tooltip();
+        initComplete: function () {
+            initTooltips();
         }
     });
 

@@ -18,12 +18,8 @@
     --corLink: #414e6c;
 }
 
-* {
-
-}
-
 body {
-    color: var(--corTexto)
+    color: var(--corTexto);
 }
 
 a {
@@ -35,171 +31,92 @@ a:hover {
     color: var(--cor5);
 }
 
-
-img {
-    width: 100%;
+/* Imagens responsivas - apenas dentro de conteúdo, não ícones */
+.post-body img,
+.content-img,
+.img-fluid-content {
+    max-width: 100%;
+    height: auto;
 }
 
-.corTexto {
-    color: var(--corTexto)
-}
+/* Utilitários de cor de fundo */
+.fundo1  { background: var(--cor1);  }
+.fundo2  { background: var(--cor2);  }
+.fundo3  { background: var(--cor3);  }
+.fundo4  { background: var(--cor4);  }
+.fundo5  { background: var(--cor5);  }
+.fundo6  { background: var(--cor6);  }
+.fundo7  { background: var(--cor7);  }
+.fundo8  { background: var(--cor8);  }
+.fundo9  { background: var(--cor9);  }
+.fundo10 { background: var(--cor10); }
+.fundo11 { background: var(--cor11); }
+.fundo12 { background: var(--cor12); }
+.fundo13 { background: var(--cor13); }
+.fundo14 { background: var(--cor14); }
+.fundo15 { background: var(--cor15); }
 
-.fundo1 {
-    background: var(--cor1)
-}
+/* Utilitários de cor de texto */
+.cor1  { color: var(--cor1);  }
+.cor2  { color: var(--cor2);  }
+.cor3  { color: var(--cor3);  }
+.cor4  { color: var(--cor4);  }
+.cor5  { color: var(--cor5);  }
+.cor6  { color: var(--cor6);  }
+.cor7  { color: var(--cor7);  }
+.cor8  { color: var(--cor8);  }
+.cor9  { color: var(--cor9);  }
+.cor10 { color: var(--cor10); }
+.cor11 { color: var(--cor11); }
+.cor12 { color: var(--cor12); }
+.cor13 { color: var(--cor13); }
+.cor14 { color: var(--cor14); }
+.cor15 { color: var(--cor15); }
+.corTexto { color: var(--corTexto); }
 
-.fundo2 {
-    background: var(--cor2)
-}
-
-.fundo3 {
-    background: var(--cor3)
-}
-
-.fundo4 {
-    background: var(--cor4)
-}
-
-.fundo5 {
-    background: var(--cor5)
-}
-
-.fundo6 {
-    background: var(--cor6)
-}
-
-.fundo7 {
-    background: var(--cor7)
-}
-
-.fundo8 {
-    background: var(--cor8)
-}
-
-.fundo9 {
-    background: var(--cor9)
-}
-
-.fundo10 {
-    background: var(--cor10)
-}
-
-.fundo11 {
-    background: var(--cor11)
-}
-
-.fundo12 {
-    background: var(--cor12)
-}
-
-.fundo13 {
-    background: var(--cor13)
-}
-
-.fundo14 {
-    background: var(--cor14)
-}
-
-.fundo15 {
-    background: var(--cor15)
-}
-
-.cor1 {
-    color: var(--cor1)
-}
-
-.cor2 {
-    color: var(--cor2)
-}
-
-.cor3 {
-    color: var(--cor3)
-}
-
-.cor4 {
-    color: var(--cor4)
-}
-
-.cor5 {
-    color: var(--cor5)
-}
-
-.cor6 {
-    color: var(--cor6)
-}
-
-.cor7 {
-    color: var(--cor7)
-}
-
-.cor8 {
-    color: var(--cor8)
-}
-
-.cor9 {
-    color: var(--cor9)
-}
-
-.cor10 {
-    color: var(--cor10)
-}
-
-.cor11 {
-    color: var(--cor11)
-}
-
-.cor12 {
-    color: var(--cor12)
-}
-
-.cor13 {
-    color: var(--cor13)
-}
-
-.cor14 {
-    color: var(--cor14)
-}
-
-.cor15 {
-    color: var(--cor15)
-}
-
-.ajaxLoading{
+/* Overlay de carregamento AJAX */
+.ajaxLoading {
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     position: fixed;
-    background-color: #000;
-    opacity: 0.8;
-    z-index: 1099;
-    display: none
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(3px);
+    z-index: 1098;
+    display: none;
 }
+
 .spinner {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 20;
-    text-align: center
+    z-index: 1099;
+    text-align: center;
 }
+
 .spinner i {
-    font-size: 3.5em;
-    color: lime;
+    font-size: 3rem;
+    color: #ffc527;
+    filter: drop-shadow(0 0 12px rgba(255, 197, 39, 0.6));
 }
+
 .spinner p {
     color: #fff;
-    animation: rotacionar 2s infinite;
+    margin-top: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    animation: spinnerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spinnerPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 .iconeCadastro {
     font-size: 10em;
-    color: #000
+    color: #000;
 }
-@keyframes rotacionar {
-    0%,80% {
-        transform: rotateY(360deg)
-    }
-}
-
-

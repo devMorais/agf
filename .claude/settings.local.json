@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /c/Users/UITEC/Herd/agf log --oneline -10)"
+    ]
+  }
+}

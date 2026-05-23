@@ -19,20 +19,20 @@ class ComposerStaticInit9116c229d57c854c1932518ac2f08043
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
+        's' =>
         array (
             'sistema\\' => 8,
         ),
-        'T' => 
+        'T' =>
         array (
             'Twig\\' => 5,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
-        'P' => 
+        'P' =>
         array (
             'Pecee\\' => 6,
             'PHPMailer\\PHPMailer\\' => 20,
@@ -40,27 +40,27 @@ class ComposerStaticInit9116c229d57c854c1932518ac2f08043
     );
 
     public static $prefixDirsPsr4 = array (
-        'sistema\\' => 
+        'sistema\\' =>
         array (
             0 => __DIR__ . '/../..' . '/sistema',
         ),
-        'Twig\\' => 
+        'Twig\\' =>
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Pecee\\' => 
+        'Pecee\\' =>
         array (
             0 => __DIR__ . '/..' . '/pecee/simple-router/src/Pecee',
         ),
-        'PHPMailer\\PHPMailer\\' => 
+        'PHPMailer\\PHPMailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),

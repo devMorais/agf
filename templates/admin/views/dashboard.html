@@ -5,106 +5,143 @@
 
 <div class="conteudo">
     {% include 'topo.html' %}
-    <main class="p-4">
+    <main>
         {% block conteudo %}
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Cabeçalho da página -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
-                <h4 class="fw-bold mb-0">Dashboard</h4>
-                <small class="text-muted">{{saudacao()}}, {{usuario().nome}}. Último login: {{usuario().ultimo_login
-                    |date('d/m/Y H:i')}}</small>
+                <h4 class="fw-bold mb-0" style="color: var(--admin-text);">Dashboard</h4>
+                <small class="text-muted">
+                    {{ saudacao() }}, <strong>{{ usuario().nome }}</strong>.
+                    Último acesso: {{ usuario().ultimo_login|date('d/m/Y H:i') }}
+                </small>
             </div>
             {{ flash() }}
+            <div>
+                <a href="{{ url('') }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill">
+                    <i class="fas fa-external-link-alt me-1"></i> Ver Site
+                </a>
+            </div>
         </div>
 
+        <!-- Cards de métricas -->
         <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-success text-white p-3">
-                    <div class="d-flex justify-content-between align-items-center">
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card card-green h-100">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <small class="text-white-50 text-uppercase fw-bold">Total Arrecadado</small>
-                            <h3 class="fw-bold mb-0">R$ {{ doacoes.total_valor|number_format(2, ',', '.') }}</h3>
+                            <p class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.8px; font-size: 0.72rem;">Total Arrecadado</p>
+                            <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: var(--admin-text);">
+                                R$ {{ doacoes.total_valor|number_format(2, ',', '.') }}
+                            </h3>
                         </div>
-                        <i class="fas fa-hand-holding-usd fa-2x opacity-50"></i>
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
                     </div>
+                    <p class="mb-0 mt-2 small text-muted">doações confirmadas</p>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-primary text-white p-3">
-                    <div class="d-flex justify-content-between align-items-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card card-blue h-100">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <small class="text-white-50 text-uppercase fw-bold">Notícias Publicadas</small>
-                            <h3 class="fw-bold mb-0">{{ posts.total }}</h3>
+                            <p class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.8px; font-size: 0.72rem;">Publicações</p>
+                            <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: var(--admin-text);">
+                                {{ posts.total }}
+                            </h3>
                         </div>
-                        <i class="fas fa-newspaper fa-2x opacity-50"></i>
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
                     </div>
+                    <p class="mb-0 mt-2 small text-muted">notícias publicadas</p>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-warning text-dark p-3">
-                    <div class="d-flex justify-content-between align-items-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card card-yellow h-100">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <small class="text-dark-50 text-uppercase fw-bold">Aguardando Pagto</small>
-                            <h3 class="fw-bold mb-0">{{ doacoes.pendentes }}</h3>
+                            <p class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.8px; font-size: 0.72rem;">Aguardando Pgto</p>
+                            <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: var(--admin-text);">
+                                {{ doacoes.pendentes }}
+                            </h3>
                         </div>
-                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                        <div class="stat-icon bg-yellow">
+                            <i class="fas fa-clock"></i>
+                        </div>
                     </div>
+                    <p class="mb-0 mt-2 small text-muted">doações pendentes</p>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-dark text-white p-3">
-                    <div class="d-flex justify-content-between align-items-center">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card card-dark h-100">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <small class="text-white-50 text-uppercase fw-bold">Usuários / Admins</small>
-                            <h3 class="fw-bold mb-0">{{ usuarios.total }} / {{ usuarios.admin }}</h3>
+                            <p class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.8px; font-size: 0.72rem;">Usuários</p>
+                            <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: var(--admin-text);">
+                                {{ usuarios.total }}
+                                <span class="fs-6 fw-normal text-muted">/ {{ usuarios.admin }} admins</span>
+                            </h3>
                         </div>
-                        <i class="fas fa-users fa-2x opacity-50"></i>
+                        <div class="stat-icon bg-dark">
+                            <i class="fas fa-users"></i>
+                        </div>
                     </div>
+                    <p class="mb-0 mt-2 small text-muted">membros cadastrados</p>
                 </div>
             </div>
         </div>
 
+        <!-- Tabelas -->
         <div class="row g-4">
+
+            <!-- Últimas Doações -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-3">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 fw-bold"><i class="fas fa-heart text-danger me-2"></i>Últimas Doações
-                            Confirmadas</h6>
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-heart me-2" style="color: var(--admin-accent);"></i>Últimas Doações Confirmadas
+                        </h6>
+                        <span class="badge rounded-pill" style="background: rgba(237,88,63,0.1); color: var(--admin-accent); font-weight: 700;">
+                            {{ doacoes.ultimas|length }} registro(s)
+                        </span>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0" style="font-size: 0.88rem;">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Doador</th>
+                                        <th class="ps-4">Doador</th>
                                         <th>Valor</th>
                                         <th>Data</th>
-                                        <th class="text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for doacao in doacoes.ultimas %}
                                     <tr>
-                                        <td>
-                                            <div class="fw-bold">{{ doacao.doador_nome|default('Doador Anônimo') }}
-                                            </div>
+                                        <td class="ps-4">
+                                            <div class="fw-semibold">{{ doacao.doador_nome|default('Doador Anônimo') }}</div>
                                             <small class="text-muted">{{ doacao.doador_email }}</small>
                                         </td>
-                                        <td class="text-success fw-bold">R$ {{ doacao.valor|number_format(2, ',', '.')
-                                            }}</td>
-                                        <td>{{ doacao.cadastrado_em|date('d/m/Y') }}</td>
-                                        <td class="text-center">
-                                            <a href="#" class="btn btn-sm btn-light border" title="Ver Detalhes">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                        <td>
+                                            <span class="fw-bold" style="color: #16a34a;">
+                                                R$ {{ doacao.valor|number_format(2, ',', '.') }}
+                                            </span>
                                         </td>
+                                        <td class="text-muted">{{ doacao.cadastrado_em|date('d/m/Y') }}</td>
                                     </tr>
                                     {% else %}
                                     <tr>
-                                        <td colspan="4" class="text-center p-4">Nenhuma doação confirmada ainda.</td>
+                                        <td colspan="3" class="text-center py-5 text-muted">
+                                            <i class="fas fa-heart-broken fa-2x mb-2 d-block opacity-25"></i>
+                                            Nenhuma doação confirmada ainda.
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -114,31 +151,48 @@
                 </div>
             </div>
 
+            <!-- Últimas Postagens -->
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-3">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold"><i class="fas fa-edit text-primary me-2"></i>Últimas Postagens</h6>
-                        <a href="{{ url('admin/posts/cadastrar') }}" class="btn btn-sm btn-primary rounded-pill">Novo
-                            Post</a>
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-edit me-2 text-primary"></i>Últimas Postagens
+                        </h6>
+                        <a href="{{ url('admin/posts/cadastrar') }}"
+                           class="btn btn-sm rounded-pill text-white"
+                           style="background: var(--admin-accent); font-size: 0.8rem;">
+                            <i class="fas fa-plus me-1"></i> Nova
+                        </a>
                     </div>
                     <div class="list-group list-group-flush">
                         {% for post in posts.posts %}
-                        <div class="list-group-item p-3">
-                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                <h6 class="mb-1 fw-bold text-truncate" style="max-width: 250px;">{{ post.titulo }}</h6>
-                                <span class="badge {{ post.status == 1 ? 'bg-success' : 'bg-secondary' }} rounded-pill">
+                        <div class="list-group-item list-group-item-action p-3 border-bottom">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <p class="mb-1 fw-semibold text-truncate" style="max-width: 210px; font-size: 0.88rem;">
+                                    {{ post.titulo }}
+                                </p>
+                                <span class="badge rounded-pill ms-2 flex-shrink-0
+                                    {{ post.status == 1 ? '' : '' }}"
+                                    style="background: {{ post.status == 1 ? 'rgba(34,197,94,0.12)' : 'rgba(100,116,139,0.12)' }};
+                                           color: {{ post.status == 1 ? '#16a34a' : '#64748b' }};
+                                           font-size: 0.72rem; font-weight: 700;">
                                     {{ post.status == 1 ? 'Ativo' : 'Inativo' }}
                                 </span>
                             </div>
-                            <small class="text-muted">Cadastrado em {{ post.cadastrado_em|date('d/m/Y') }}</small>
+                            <small class="text-muted">{{ post.cadastrado_em|date('d/m/Y') }}</small>
                         </div>
                         {% else %}
-                        <div class="p-4 text-center">Nenhum post cadastrado.</div>
+                        <div class="p-5 text-center text-muted">
+                            <i class="fas fa-file-alt fa-2x mb-2 d-block opacity-25"></i>
+                            Nenhum post cadastrado.
+                        </div>
                         {% endfor %}
                     </div>
-                    <div class="card-footer bg-white text-center">
-                        <a href="{{ url('admin/posts/listar') }}" class="small text-decoration-none">Ver todas as
-                            postagens <i class="fas fa-arrow-right ms-1"></i></a>
+                    <div class="card-footer bg-white text-center border-top py-3">
+                        <a href="{{ url('admin/posts/listar') }}" class="small fw-semibold text-decoration-none"
+                           style="color: var(--admin-accent);">
+                            Ver todas as postagens <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -148,4 +202,5 @@
     </main>
     {% include 'rodape.html' %}
 </div>
+
 {% endblock %}
