@@ -1,0 +1,18 @@
+# ── Configuração com segredos (editada direto no servidor) ──
+# Nunca versionar: contém senhas de banco/e-mail.
+/sistema/configuracao.php
+
+# ── Logs ──
+*.log
+/logs/
+
+# ── Sistema operacional / editores ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ── Temporários ──
+/scratchpad/
+*.bak
