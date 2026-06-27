@@ -25,15 +25,29 @@ class DoacaoControlador extends Controlador
     {
         $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
 
-        if (empty($dados['valor']) || (float)$dados['valor'] < 1) {
-            $this->mensagem->erro('O valor da doação deve ser de pelo menos R$ 1,00.')->flash();
+        $valor = isset($dados['valor']) ? (float) $dados['valor'] : 0;
+
+        if ($valor < 1 || $valor > 100000) {
+            $this->mensagem->erro('O valor da doação deve estar entre R$ 1,00 e R$ 100.000,00.')->flash();
+            Helpers::redirecionar('doar');
+            return;
+        }
+
+        if (empty($dados['nome']) || mb_strlen(trim($dados['nome'])) < 3) {
+            $this->mensagem->erro('Informe seu nome completo.')->flash();
+            Helpers::redirecionar('doar');
+            return;
+        }
+
+        if (empty($dados['email']) || !filter_var($dados['email'], FILTER_VALIDATE_EMAIL)) {
+            $this->mensagem->erro('Informe um e-mail válido.')->flash();
             Helpers::redirecionar('doar');
             return;
         }
 
         $doacao = new DoacaoModelo();
         $doacao->usuario_id = null;
-        $doacao->valor = (float) $dados['valor'];
+        $doacao->valor = $valor;
         $doacao->status = 'aguardando';
 
         // --- CAPTURA OS NOVOS DADOS ---

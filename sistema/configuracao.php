@@ -30,7 +30,7 @@ if (Helpers::localhost()) {
     define('URL_ADMIN', '/admin/');
 
     // InfinitePay - LOCAL
-    define('INFINITEPAY_HANDLE', 'rosivalmorais');
+    define('INFINITEPAY_HANDLE', 'fe_guiar92');
     define('INFINITEPAY_URL', 'https://api.infinitepay.io');
     define('INFINITEPAY_WEBHOOK_URL', 'https://agf.test/webhook/infinitepay');
     define('INFINITEPAY_REDIRECT_URL', null);
@@ -47,7 +47,7 @@ if (Helpers::localhost()) {
     define('URL_ADMIN', '/admin/');
 
     // InfinitePay - PRODUÇÃO
-    define('INFINITEPAY_HANDLE', 'rosivalmorais');
+    define('INFINITEPAY_HANDLE', 'fe_guiar92');
     define('INFINITEPAY_URL', 'https://api.infinitepay.io');
     define('INFINITEPAY_WEBHOOK_URL', 'https://associacaograndefamilia.devmorais.com.br/webhook/infinitepay');
     define('INFINITEPAY_REDIRECT_URL', null);

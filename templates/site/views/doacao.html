@@ -99,14 +99,15 @@
                         <span class="cv-prefix">R$</span>
                         <input type="number"
                                id="valor" name="valor"
-                               min="1" step="0.01"
+                               min="1" max="100000" step="0.01"
                                placeholder="Ou digite outro valor"
                                inputmode="decimal"
                                autocomplete="off"
-                               aria-label="Valor personalizado">
+                               aria-label="Valor personalizado da doação"
+                               aria-describedby="erroValor">
                     </div>
-                    <p class="field-err" id="erroValor">
-                        <i class="fas fa-exclamation-circle"></i> Informe um valor mínimo de R$ 1,00.
+                    <p class="field-err" id="erroValor" role="alert" aria-live="assertive">
+                        <i class="fas fa-exclamation-circle"></i> Informe um valor entre R$ 1,00 e R$ 100.000,00.
                     </p>
                 </div>
 
@@ -118,8 +119,9 @@
                         <label class="field-label" for="nome">Nome completo <span aria-hidden="true">*</span></label>
                         <input type="text" id="nome" name="nome"
                                class="field-input" placeholder="Como devemos te chamar?"
-                               autocomplete="name" required>
-                        <p class="field-err" id="erroNome">
+                               autocomplete="name" required
+                               aria-describedby="erroNome">
+                        <p class="field-err" id="erroNome" role="alert" aria-live="assertive">
                             <i class="fas fa-exclamation-circle"></i> Informe seu nome completo.
                         </p>
                     </div>
@@ -129,16 +131,22 @@
                             <label class="field-label" for="email">E-mail <span aria-hidden="true">*</span></label>
                             <input type="email" id="email" name="email"
                                    class="field-input" placeholder="seu@email.com"
-                                   autocomplete="email" required>
-                            <p class="field-err" id="erroEmail">
+                                   autocomplete="email" required
+                                   aria-describedby="erroEmail erroEmailHint">
+                            <p class="field-err" id="erroEmail" role="alert" aria-live="assertive">
                                 <i class="fas fa-exclamation-circle"></i> E-mail inválido.
                             </p>
+                            <span id="erroEmailHint" class="field-hint">Enviaremos o comprovante para este e-mail.</span>
                         </div>
                         <div class="field-group">
                             <label class="field-label" for="telefone">WhatsApp <span class="optional">(opcional)</span></label>
                             <input type="tel" id="telefone" name="telefone"
                                    class="field-input" placeholder="(00) 00000-0000"
-                                   autocomplete="tel" inputmode="tel">
+                                   autocomplete="tel" inputmode="tel"
+                                   maxlength="16" aria-describedby="erroTelefone">
+                            <p class="field-err" id="erroTelefone" role="alert" aria-live="assertive">
+                                <i class="fas fa-exclamation-circle"></i> Telefone incompleto.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -161,6 +169,12 @@
                         <i class="fas fa-arrow-right btn-arrow"></i>
                     </span>
                 </button>
+
+                <!-- Microcopy de redirecionamento seguro -->
+                <p class="redirect-note">
+                    <i class="fas fa-info-circle"></i>
+                    Você será levado ao ambiente seguro da <strong>InfinitePay</strong> para concluir o pagamento via PIX ou cartão.
+                </p>
 
                 <!-- Selos abaixo do botão -->
                 <div class="form-seals">
@@ -554,6 +568,44 @@
 
 .field-err.show { display: flex; }
 
+/* Dica auxiliar (abaixo do campo) */
+.field-hint {
+    display: block;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    margin-top: 0.3rem;
+}
+
+/* ── Foco visível por teclado (acessibilidade) ── */
+.vbtn:focus-visible,
+.donate-btn:focus-visible,
+.anon-check:focus-within {
+    outline: 3px solid rgba(255,197,39,0.55);
+    outline-offset: 2px;
+}
+
+.field-input:focus-visible {
+    outline: none; /* já tratado pelo box-shadow do :focus */
+}
+
+/* ── Microcopy de redirecionamento ── */
+.redirect-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.redirect-note i { color: #3b82f6; margin-top: 1px; flex-shrink: 0; }
+.redirect-note strong { color: #475569; }
+
 /* ── Checkbox anônimo ── */
 .anon-check {
     display: flex;
@@ -715,6 +767,14 @@
     .impact-side { padding: 1rem; }
     .impact-heading { font-size: 1.15rem; }
     .impact-label { font-size: 0.65rem; }
+
+    /* Evita o zoom automático do iOS (font-size < 16px) */
+    .field-input,
+    .custom-value-wrap input { font-size: 16px; }
+
+    /* Alvos de toque mais confortáveis */
+    .vbtn { padding: 1rem 0.4rem; }
+    .donate-btn { padding: 1.15rem 1.5rem; font-size: 1.1rem; }
 }
 </style>
 
@@ -757,64 +817,86 @@
     input.addEventListener('input', function () {
         vBtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
         wrapBox.classList.toggle('input-active', this.value.length > 0);
+        this.classList.remove('error');
+        this.removeAttribute('aria-invalid');
         document.getElementById('erroValor').classList.remove('show');
     });
 
+    // ── Helpers de erro acessível ──
+    function marcarErro(campo, erroEl) {
+        if (campo) { campo.classList.add('error'); campo.setAttribute('aria-invalid', 'true'); }
+        if (erroEl) erroEl.classList.add('show');
+    }
+    function limparErro(campo, erroEl) {
+        if (campo) { campo.classList.remove('error'); campo.removeAttribute('aria-invalid'); }
+        if (erroEl) erroEl.classList.remove('show');
+    }
+    function telDigitos(el) { return (el.value || '').replace(/\D/g, ''); }
+
     // ── Máscara de telefone ──
-    var tel = document.getElementById('telefone');
+    var tel    = document.getElementById('telefone');
+    var erroTel = document.getElementById('erroTelefone');
     if (tel) {
         tel.addEventListener('input', function () {
             var n = this.value.replace(/\D/g,'').slice(0,11);
             if      (n.length > 6) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7);
             else if (n.length > 2) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2);
             else if (n.length > 0) this.value = '(' + n;
+            if (n.length === 0 || n.length >= 10) limparErro(tel, erroTel);
         });
     }
 
     // ── Limpa erros ao corrigir ──
-    document.getElementById('nome').addEventListener('input', function () {
-        if (this.value.trim().length >= 3) {
-            this.classList.remove('error');
-            document.getElementById('erroNome').classList.remove('show');
-        }
+    var campoNome  = document.getElementById('nome');
+    var erroNome   = document.getElementById('erroNome');
+    var campoEmail = document.getElementById('email');
+    var erroEmail  = document.getElementById('erroEmail');
+
+    campoNome.addEventListener('input', function () {
+        if (this.value.trim().length >= 3) limparErro(campoNome, erroNome);
     });
-    document.getElementById('email').addEventListener('input', function () {
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value.trim())) {
-            this.classList.remove('error');
-            document.getElementById('erroEmail').classList.remove('show');
-        }
+    campoEmail.addEventListener('input', function () {
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value.trim())) limparErro(campoEmail, erroEmail);
     });
 
     // ── Validação e submit ──
     document.getElementById('formDoacao').addEventListener('submit', function (e) {
         var ok = true;
+        var erroValor = document.getElementById('erroValor');
 
-        // Valor
+        // Valor (entre R$ 1,00 e R$ 100.000,00)
         var v = parseFloat(input.value);
-        if (!input.value || isNaN(v) || v < 1) {
+        if (!input.value || isNaN(v) || v < 1 || v > 100000) {
             e.preventDefault();
-            document.getElementById('erroValor').classList.add('show');
+            marcarErro(input, erroValor);
             input.focus();
             ok = false;
+        } else {
+            limparErro(input, erroValor);
         }
 
         // Nome
-        var nome = document.getElementById('nome');
-        if (nome.value.trim().length < 3) {
+        if (campoNome.value.trim().length < 3) {
             e.preventDefault();
-            nome.classList.add('error');
-            document.getElementById('erroNome').classList.add('show');
-            if (ok) nome.focus();
+            marcarErro(campoNome, erroNome);
+            if (ok) campoNome.focus();
             ok = false;
         }
 
         // Email
-        var em = document.getElementById('email');
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(campoEmail.value.trim())) {
             e.preventDefault();
-            em.classList.add('error');
-            document.getElementById('erroEmail').classList.add('show');
-            if (ok) em.focus();
+            marcarErro(campoEmail, erroEmail);
+            if (ok) campoEmail.focus();
+            ok = false;
+        }
+
+        // Telefone (opcional, mas se preenchido precisa ter 10-11 dígitos)
+        var nTel = tel ? telDigitos(tel) : '';
+        if (tel && nTel.length > 0 && nTel.length < 10) {
+            e.preventDefault();
+            marcarErro(tel, erroTel);
+            if (ok) tel.focus();
             ok = false;
         }
 
