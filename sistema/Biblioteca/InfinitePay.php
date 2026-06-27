@@ -133,11 +133,22 @@ class InfinitePay
 
     private function formatarDadosCliente(array $d): array
     {
-        return [
-            'name' => $d['nome'] ?? '',
-            'cpf' => isset($d['cpf']) ? Helpers::limparNumero($d['cpf']) : null,
-            'email' => $d['email'] ?? null,
-            'phone_number' => Helpers::limparNumero($d['telefone'] ?? '')
-        ];
+        $cliente = ['name' => $d['nome'] ?? ''];
+
+        if (!empty($d['cpf'])) {
+            $cliente['cpf'] = Helpers::limparNumero($d['cpf']);
+        }
+
+        if (!empty($d['email'])) {
+            $cliente['email'] = $d['email'];
+        }
+
+        // InfinitePay exige o telefone no formato internacional: +5561999887766
+        $telefone = Helpers::limparNumero($d['telefone'] ?? '');
+        if (strlen($telefone) >= 10) {
+            $cliente['phone_number'] = '+55' . $telefone;
+        }
+
+        return $cliente;
     }
 }

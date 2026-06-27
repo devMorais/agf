@@ -21,7 +21,7 @@ class PagamentoInfinitepayControlador extends Controlador
 
         // --- MONTA OS DADOS DO CLIENTE PARA A API ---
         $dadosCliente = null;
-        if (!empty($doacao->doador_nome) || !empty($doacao->doador_email)) {
+        if (!empty($doacao->doador_nome) || !empty($doacao->doador_telefone)) {
             $dadosCliente = [
                 'nome'     => $doacao->doador_nome,
                 'email'    => $doacao->doador_email,

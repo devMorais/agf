@@ -126,28 +126,17 @@
                         </p>
                     </div>
 
-                    <div class="fields-row">
-                        <div class="field-group">
-                            <label class="field-label" for="email">E-mail <span aria-hidden="true">*</span></label>
-                            <input type="email" id="email" name="email"
-                                   class="field-input" placeholder="seu@email.com"
-                                   autocomplete="email" required
-                                   aria-describedby="erroEmail erroEmailHint">
-                            <p class="field-err" id="erroEmail" role="alert" aria-live="assertive">
-                                <i class="fas fa-exclamation-circle"></i> E-mail inválido.
-                            </p>
-                            <span id="erroEmailHint" class="field-hint">Enviaremos o comprovante para este e-mail.</span>
-                        </div>
-                        <div class="field-group">
-                            <label class="field-label" for="telefone">WhatsApp <span class="optional">(opcional)</span></label>
-                            <input type="tel" id="telefone" name="telefone"
-                                   class="field-input" placeholder="(00) 00000-0000"
-                                   autocomplete="tel" inputmode="tel"
-                                   maxlength="16" aria-describedby="erroTelefone">
-                            <p class="field-err" id="erroTelefone" role="alert" aria-live="assertive">
-                                <i class="fas fa-exclamation-circle"></i> Telefone incompleto.
-                            </p>
-                        </div>
+                    <div class="field-group">
+                        <label class="field-label" for="telefone">WhatsApp <span aria-hidden="true">*</span></label>
+                        <input type="tel" id="telefone" name="telefone"
+                               class="field-input" placeholder="(00) 00000-0000"
+                               autocomplete="tel" inputmode="tel"
+                               maxlength="16" required
+                               aria-describedby="erroTelefone telefoneHint">
+                        <p class="field-err" id="erroTelefone" role="alert" aria-live="assertive">
+                            <i class="fas fa-exclamation-circle"></i> Informe um WhatsApp válido com DDD.
+                        </p>
+                        <span id="telefoneHint" class="field-hint">Usado para confirmar seu pagamento na InfinitePay.</span>
                     </div>
                 </div>
 
@@ -842,21 +831,16 @@
             if      (n.length > 6) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2,7) + '-' + n.slice(7);
             else if (n.length > 2) this.value = '(' + n.slice(0,2) + ') ' + n.slice(2);
             else if (n.length > 0) this.value = '(' + n;
-            if (n.length === 0 || n.length >= 10) limparErro(tel, erroTel);
+            if (n.length >= 10) limparErro(tel, erroTel);
         });
     }
 
     // ── Limpa erros ao corrigir ──
-    var campoNome  = document.getElementById('nome');
-    var erroNome   = document.getElementById('erroNome');
-    var campoEmail = document.getElementById('email');
-    var erroEmail  = document.getElementById('erroEmail');
+    var campoNome = document.getElementById('nome');
+    var erroNome  = document.getElementById('erroNome');
 
     campoNome.addEventListener('input', function () {
         if (this.value.trim().length >= 3) limparErro(campoNome, erroNome);
-    });
-    campoEmail.addEventListener('input', function () {
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value.trim())) limparErro(campoEmail, erroEmail);
     });
 
     // ── Validação e submit ──
@@ -883,17 +867,9 @@
             ok = false;
         }
 
-        // Email
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(campoEmail.value.trim())) {
-            e.preventDefault();
-            marcarErro(campoEmail, erroEmail);
-            if (ok) campoEmail.focus();
-            ok = false;
-        }
-
-        // Telefone (opcional, mas se preenchido precisa ter 10-11 dígitos)
+        // Telefone (obrigatório, 10-11 dígitos com DDD)
         var nTel = tel ? telDigitos(tel) : '';
-        if (tel && nTel.length > 0 && nTel.length < 10) {
+        if (nTel.length < 10) {
             e.preventDefault();
             marcarErro(tel, erroTel);
             if (ok) tel.focus();

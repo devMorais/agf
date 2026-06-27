@@ -39,8 +39,9 @@ class DoacaoControlador extends Controlador
             return;
         }
 
-        if (empty($dados['email']) || !filter_var($dados['email'], FILTER_VALIDATE_EMAIL)) {
-            $this->mensagem->erro('Informe um e-mail válido.')->flash();
+        $telefoneDigitos = preg_replace('/\D/', '', $dados['telefone'] ?? '');
+        if (strlen($telefoneDigitos) < 10) {
+            $this->mensagem->erro('Informe um WhatsApp válido com DDD.')->flash();
             Helpers::redirecionar('doar');
             return;
         }
