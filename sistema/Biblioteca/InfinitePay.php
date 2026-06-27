@@ -35,7 +35,7 @@ class InfinitePay
         if ($transactionNsu) $payload['transaction_nsu'] = $transactionNsu;
         if ($slug) $payload['slug'] = $slug;
 
-        $resposta = $this->request('/invoices/public/checkout/payment_check', $payload, 'verificar_pagamento');
+        $resposta = $this->request('/payment_check', $payload, 'verificar_pagamento');
 
         if (!isset($resposta->success)) {
             return ['erro' => true, 'paid' => false, 'mensagem' => $resposta->message ?? 'Erro na checagem'];
@@ -63,7 +63,7 @@ class InfinitePay
         ];
 
 
-        $resposta = $this->request('/invoices/public/checkout/links', array_filter($payload, fn($v) => $v !== null), 'criar_link');
+        $resposta = $this->request('/links', array_filter($payload, fn($v) => $v !== null), 'criar_link');
 
 
         if (!isset($resposta->url)) {
