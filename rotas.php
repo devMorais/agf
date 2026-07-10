@@ -14,6 +14,7 @@ try {
     SimpleRouter::get(URL_SITE . 'privacidade', 'SiteControlador@privacidade');
     SimpleRouter::get(URL_SITE . 'termos', 'SiteControlador@termos');
     SimpleRouter::get(URL_SITE . 'transparencia', 'SiteControlador@transparencia');
+    SimpleRouter::get(URL_SITE . 'acoes', 'SiteControlador@galeria');
     SimpleRouter::get(URL_SITE . 'post/{categoria}/{slug}', 'SiteControlador@post');
     SimpleRouter::get(URL_SITE . 'categoria/{slug}/{pagina?}', 'SiteControlador@categoria');
     SimpleRouter::post(URL_SITE . 'buscar', 'SiteControlador@buscar');

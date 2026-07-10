@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+
+<!-- ============ CABEÇALHO ============ -->
+<section class="galeria-hero">
+    <div class="container">
+        <p class="gh-label">Nossas ações</p>
+        <h1 class="gh-titulo">Cada entrega tem <em>nome e rosto</em></h1>
+        <p class="gh-sub">
+            Não publicamos números soltos. Publicamos as famílias que abriram a porta,
+            aceitaram uma conversa e receberam sua cesta.
+        </p>
+    </div>
+</section>
+
+<!-- ============ AÇÃO ============ -->
+<section class="container galeria-wrap">
+
+    <div class="acao-cabecalho">
+        <div>
+            <h2 class="acao-titulo">Entrega de cestas básicas</h2>
+            <p class="acao-meta">
+                <i class="fas fa-map-marker-alt"></i> Bairro São Francisco
+                <span class="acao-sep">•</span>
+                <i class="fas fa-calendar"></i> Julho de 2026
+            </p>
+        </div>
+        <a href="https://www.instagram.com/sonhosagf/" target="_blank" rel="noopener"
+           class="btn-instagram">
+            <i class="fab fa-instagram"></i> Ver no Instagram
+        </a>
+    </div>
+
+    <p class="acao-texto">
+        Fomos ao bairro São Francisco com a ajuda do diretor da Escola Municipal São Francisco.
+        Conhecemos as famílias, entregamos as cestas básicas e cadastramos todo mundo na
+        Associação — porque o apoio não pode acabar quando a gente vai embora.
+        Conversando, encontramos outras formas de ajudar, como remédios. É o nosso próximo passo.
+    </p>
+
+    <!-- Grade de fotos -->
+    <div class="galeria-grid">
+
+        <figure class="foto-item">
+            <a href="{{ url('templates/site/assets/img/galeria/01-entrega-cesta.jpg') }}"
+               data-fancybox="acao-sao-francisco"
+               data-caption="Entrega de cesta básica no bairro São Francisco">
+                <img src="{{ url('templates/site/assets/img/galeria/01-entrega-cesta.jpg') }}"
+                     alt="Voluntário da Associação entrega uma cesta básica a uma moradora, na porta de casa."
+                     loading="lazy" width="900" height="1125">
+                <span class="foto-lupa"><i class="fas fa-expand"></i></span>
+            </a>
+        </figure>
+
+        <figure class="foto-item">
+            <a href="{{ url('templates/site/assets/img/galeria/02-visita-familia.jpg') }}"
+               data-fancybox="acao-sao-francisco"
+               data-caption="Visita a uma das famílias cadastradas">
+                <img src="{{ url('templates/site/assets/img/galeria/02-visita-familia.jpg') }}"
+                     alt="Voluntário e moradora sorriem juntos após a entrega da cesta."
+                     loading="lazy" width="900" height="1125">
+                <span class="foto-lupa"><i class="fas fa-expand"></i></span>
+            </a>
+        </figure>
+
+        <figure class="foto-item">
+            <a href="{{ url('templates/site/assets/img/galeria/03-voluntario-moradora.jpg') }}"
+               data-fancybox="acao-sao-francisco"
+               data-caption="Cestas entregues e cadastro concluído">
+                <img src="{{ url('templates/site/assets/img/galeria/03-voluntario-moradora.jpg') }}"
+                     alt="Moradora e voluntário fazem sinal de positivo ao lado das cestas entregues."
+                     loading="lazy" width="900" height="1125">
+                <span class="foto-lupa"><i class="fas fa-expand"></i></span>
+            </a>
+        </figure>
+
+        <figure class="foto-item">
+            <a href="{{ url('templates/site/assets/img/galeria/04-cadastro-familia.jpg') }}"
+               data-fancybox="acao-sao-francisco"
+               data-caption="Cadastro de família na Associação">
+                <img src="{{ url('templates/site/assets/img/galeria/04-cadastro-familia.jpg') }}"
+                     alt="Voluntário conversa com moradora durante a visita de cadastro."
+                     loading="lazy" width="900" height="1125">
+                <span class="foto-lupa"><i class="fas fa-expand"></i></span>
+            </a>
+        </figure>
+
+    </div>
+
+    <!-- ============ CHAMADA PARA DOAÇÃO ============ -->
+    <div class="galeria-cta">
+        <div class="gcta-texto">
+            <h3>Quer participar da próxima entrega?</h3>
+            <p>Sua doação vira cesta, remédio e uma visita a quem precisa.</p>
+        </div>
+        <a href="{{ url('doar') }}" class="gcta-botao">
+            <i class="fas fa-heart"></i> Fazer minha doação
+        </a>
+    </div>
+
+</section>
+
+
+<style>
+/* ── Cabeçalho ── */
+.galeria-hero {
+    background: linear-gradient(160deg, #0c1629 0%, #172038 55%, #1a2540 100%);
+    color: #fff;
+    padding: 3.5rem 0 3rem;
+}
+
+.gh-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--cor-amarelo, #ffc527);
+    margin-bottom: 0.7rem;
+}
+
+.gh-titulo {
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 0.9rem;
+}
+
+.gh-titulo em {
+    font-style: normal;
+    background: linear-gradient(90deg, #ed583f, #ffc527);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gh-sub {
+    color: #94a3b8;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    max-width: 620px;
+    margin-bottom: 0;
+}
+
+/* ── Bloco da ação ── */
+.galeria-wrap { padding: 2.5rem 0 4rem; }
+
+.acao-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.acao-titulo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.3rem;
+}
+
+.acao-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0;
+}
+
+.acao-meta i { color: var(--cor-laranja, #ed583f); margin-right: 0.25rem; }
+.acao-sep { margin: 0 0.5rem; opacity: 0.5; }
+
+.btn-instagram {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.18s, background 0.18s;
+    flex-shrink: 0;
+}
+
+.btn-instagram:hover { background: var(--cor-laranja, #ed583f); color: #fff; transform: translateY(-2px); }
+
+.acao-texto {
+    color: #475569;
+    line-height: 1.8;
+    max-width: 780px;
+    margin-bottom: 2rem;
+}
+
+/* ── Grade ── */
+.galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.foto-item { margin: 0; }
+
+.foto-item a {
+    display: block;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    line-height: 0;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.foto-item a:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(237, 88, 63, 0.22);
+}
+
+.foto-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+}
+
+.foto-lupa {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 22, 41, 0.45);
+    color: #fff;
+    font-size: 1.4rem;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.foto-item a:hover .foto-lupa { opacity: 1; }
+
+/* ── CTA ── */
+.galeria-cta {
+    margin-top: 3rem;
+    background: linear-gradient(135deg, #ed583f 0%, #d94a34 100%);
+    border-radius: 18px;
+    padding: 2rem 2.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    box-shadow: 0 12px 32px rgba(237, 88, 63, 0.28);
+}
+
+.gcta-texto h3 {
+    color: #fff;
+    font-weight: 900;
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;
+}
+
+.gcta-texto p {
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 0;
+    font-size: 0.93rem;
+}
+
+.gcta-botao {
+    background: #fff;
+    color: var(--cor-laranja, #ed583f);
+    border-radius: 12px;
+    padding: 0.9rem 1.6rem;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: transform 0.18s;
+    flex-shrink: 0;
+}
+
+.gcta-botao:hover { transform: translateY(-2px); color: var(--cor-laranja, #ed583f); }
+
+/* ── Responsivo ── */
+@media (max-width: 991px) {
+    .galeria-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 575px) {
+    .galeria-hero { padding: 2.5rem 0 2rem; }
+    .galeria-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+    .galeria-cta { padding: 1.5rem; text-align: center; justify-content: center; }
+    .gcta-botao { width: 100%; justify-content: center; }
+    .btn-instagram { width: 100%; justify-content: center; }
+}
+</style>
+
+<script>
+// O FancyBox v4 não se inicializa sozinho: precisa do bind explícito.
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof Fancybox !== 'undefined') {
+        Fancybox.bind('[data-fancybox="acao-sao-francisco"]', {
+            Toolbar: { display: ['zoom', 'close'] },
+            Thumbs: { autoStart: false }
+        });
+    }
+});
+</script>
+
+{% endblock %}

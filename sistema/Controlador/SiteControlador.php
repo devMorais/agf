@@ -163,6 +163,19 @@ class SiteControlador extends Controlador
     }
 
     /**
+     * Galeria de ações realizadas
+     * @return void
+     */
+    public function galeria(): void
+    {
+        echo $this->template->renderizar('galeria.html', [
+            'titulo' => 'Nossas Ações',
+            'descricao' => 'Veja as famílias atendidas pela Associação Grande Família na entrega de cestas básicas no bairro São Francisco.',
+            'categorias' => $this->categorias(),
+        ]);
+    }
+
+    /**
      * ERRO 404
      * @return void
      */
