@@ -14,9 +14,15 @@ class PagamentoInfinitepayControlador extends Controlador
         parent::__construct('templates/site/views');
     }
 
-    public function processar(DoacaoModelo $doacao, bool $isRecorrente = false): array
+    /**
+     * Prefixo do order_nsu das doações feitas em /doar2 (conta antiga).
+     * É por ele que a tela de pagamento sabe qual handle consultar, sem coluna nova no banco.
+     */
+    private const PREFIXO_NSU_CONTA_ANTIGA = 'doacao2-';
+
+    public function processar(DoacaoModelo $doacao, bool $isRecorrente = false, bool $contaAntiga = false): array
     {
-        $infinitePay = new InfinitePay($doacao->id);
+        $infinitePay = new InfinitePay($doacao->id, $contaAntiga ? INFINITEPAY_HANDLE_ANTIGO : null);
         $urlRetorno = Helpers::url('doacao/pagamento/' . $doacao->id);
 
         // --- MONTA OS DADOS DO CLIENTE PARA A API ---
@@ -32,7 +38,7 @@ class PagamentoInfinitepayControlador extends Controlador
 
         $resultado = $infinitePay->gerarLinkPagamento(
             [['quantidade' => 1, 'valor' => (float) $doacao->valor, 'descricao' => 'Doação - Associação Grande Família']],
-            'doacao-' . $doacao->id,
+            ($contaAntiga ? self::PREFIXO_NSU_CONTA_ANTIGA : 'doacao-') . $doacao->id,
             $dadosCliente, // Passa o array com nome, email e telefone
             $urlRetorno
         );
@@ -58,7 +64,8 @@ class PagamentoInfinitepayControlador extends Controlador
             return;
         }
 
-        $infinitePay = new InfinitePay($doacao->id);
+        $contaAntiga = str_starts_with((string) $doacao->infinitepay_order_nsu, self::PREFIXO_NSU_CONTA_ANTIGA);
+        $infinitePay = new InfinitePay($doacao->id, $contaAntiga ? INFINITEPAY_HANDLE_ANTIGO : null);
         $voltouDoGateway = isset($_GET['transaction_nsu']) || isset($_GET['slug']);
 
         if ($doacao->status === 'aguardando') {

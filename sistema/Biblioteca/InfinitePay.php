@@ -15,9 +15,9 @@ class InfinitePay
     private ?string $webhookUrl;
     private ?string $redirectUrl;
 
-    public function __construct(?int $doacaoId = null)
+    public function __construct(?int $doacaoId = null, ?string $handle = null)
     {
-        $this->handle      = INFINITEPAY_HANDLE;
+        $this->handle      = $handle ?? INFINITEPAY_HANDLE;
         $this->url         = INFINITEPAY_URL;
         $this->webhookUrl  = INFINITEPAY_WEBHOOK_URL;
         $this->redirectUrl = INFINITEPAY_REDIRECT_URL;

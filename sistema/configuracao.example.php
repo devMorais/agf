@@ -42,6 +42,7 @@ if (Helpers::localhost()) {
 
     // InfinitePay - LOCAL
     define('INFINITEPAY_HANDLE', 'SEU_HANDLE_INFINITEPAY'); // ex.: fe_guiar92
+    define('INFINITEPAY_HANDLE_ANTIGO', 'HANDLE_DA_CONTA_ANTIGA'); // conta que recebe em /doar2 — ex.: rosivalmorais
     define('INFINITEPAY_URL', 'https://api.checkout.infinitepay.io');
     define('INFINITEPAY_WEBHOOK_URL', 'https://agf.test/webhook/infinitepay');
     define('INFINITEPAY_REDIRECT_URL', null);
@@ -59,6 +60,7 @@ if (Helpers::localhost()) {
 
     // InfinitePay - PRODUÇÃO (handle = conta que RECEBE o dinheiro)
     define('INFINITEPAY_HANDLE', 'SEU_HANDLE_INFINITEPAY'); // ex.: fe_guiar92
+    define('INFINITEPAY_HANDLE_ANTIGO', 'HANDLE_DA_CONTA_ANTIGA'); // conta que recebe em /doar2 — ex.: rosivalmorais
     define('INFINITEPAY_URL', 'https://api.checkout.infinitepay.io');
     define('INFINITEPAY_WEBHOOK_URL', 'https://associacaograndefamilia.devmorais.com.br/webhook/infinitepay');
     define('INFINITEPAY_REDIRECT_URL', null);

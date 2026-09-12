@@ -24,6 +24,9 @@ try {
     // DOACOES
     SimpleRouter::get(URL_SITE . 'doar', 'DoacaoControlador@index');
     SimpleRouter::post(URL_SITE . 'doar/processar', 'DoacaoControlador@processar');
+    // Formulário antigo, recebendo na conta antiga da InfinitePay (INFINITEPAY_HANDLE_ANTIGO)
+    SimpleRouter::get(URL_SITE . 'doar2', 'DoacaoControlador@contaAntiga');
+    SimpleRouter::post(URL_SITE . 'doar2/processar', 'DoacaoControlador@processarContaAntiga');
     SimpleRouter::post(URL_SITE . 'doacao/verificar', 'DoacaoControlador@verificar');
 
     // ROTA DA TELA DE PAGAMENTO (Corrigida com a subpasta Pagamento\)

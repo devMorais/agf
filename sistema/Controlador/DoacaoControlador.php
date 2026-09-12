@@ -21,34 +21,83 @@ class DoacaoControlador extends Controlador
         echo $this->template->renderizar('doacao.html', []);
     }
 
+    /**
+     * Página /doar2: formulário antigo (nome + e-mail), que recebe na conta antiga da InfinitePay
+     */
+    public function contaAntiga(): void
+    {
+        echo $this->template->renderizar('doacao_conta_antiga.html', []);
+    }
+
     public function processar(): void
     {
-        $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT) ?: [];
+        $telefoneDigitos = preg_replace('/\D/', '', $dados['telefone'] ?? '');
 
-        $valor = isset($dados['valor']) ? (float) $dados['valor'] : 0;
+        $erro = $this->validarValorENome($dados);
+        if (!$erro && strlen($telefoneDigitos) < 10) {
+            $erro = 'Informe um WhatsApp válido com DDD.';
+        }
 
-        if ($valor < 1 || $valor > 100000) {
-            $this->mensagem->erro('O valor da doação deve estar entre R$ 1,00 e R$ 100.000,00.')->flash();
+        if ($erro) {
+            $this->mensagem->erro($erro)->flash();
             Helpers::redirecionar('doar');
             return;
+        }
+
+        $this->registrarDoacao($dados, 'doar', false);
+    }
+
+    public function processarContaAntiga(): void
+    {
+        $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT) ?: [];
+        $telefoneDigitos = preg_replace('/\D/', '', $dados['telefone'] ?? '');
+
+        $erro = $this->validarValorENome($dados);
+        if (!$erro && (empty($dados['email']) || !filter_var($dados['email'], FILTER_VALIDATE_EMAIL))) {
+            $erro = 'Informe um e-mail válido.';
+        }
+        // WhatsApp é opcional neste formulário, mas se vier precisa ter DDD
+        if (!$erro && $telefoneDigitos !== '' && strlen($telefoneDigitos) < 10) {
+            $erro = 'Informe um WhatsApp válido com DDD.';
+        }
+        if (!$erro && !defined('INFINITEPAY_HANDLE_ANTIGO')) {
+            $erro = 'Esta forma de doação está indisponível no momento.';
+        }
+
+        if ($erro) {
+            $this->mensagem->erro($erro)->flash();
+            Helpers::redirecionar('doar2');
+            return;
+        }
+
+        $this->registrarDoacao($dados, 'doar2', true);
+    }
+
+    private function validarValorENome(array $dados): ?string
+    {
+        $valor = (float) ($dados['valor'] ?? 0);
+
+        if ($valor < 1 || $valor > 100000) {
+            return 'O valor da doação deve estar entre R$ 1,00 e R$ 100.000,00.';
         }
 
         if (empty($dados['nome']) || mb_strlen(trim($dados['nome'])) < 3) {
-            $this->mensagem->erro('Informe seu nome completo.')->flash();
-            Helpers::redirecionar('doar');
-            return;
+            return 'Informe seu nome completo.';
         }
 
-        $telefoneDigitos = preg_replace('/\D/', '', $dados['telefone'] ?? '');
-        if (strlen($telefoneDigitos) < 10) {
-            $this->mensagem->erro('Informe um WhatsApp válido com DDD.')->flash();
-            Helpers::redirecionar('doar');
-            return;
-        }
+        return null;
+    }
 
+    /**
+     * Salva a doação, gera o link na InfinitePay e redireciona para o pagamento.
+     * Em caso de erro volta para $rotaFormulario. Com $contaAntiga, recebe no INFINITEPAY_HANDLE_ANTIGO.
+     */
+    private function registrarDoacao(array $dados, string $rotaFormulario, bool $contaAntiga): void
+    {
         $doacao = new DoacaoModelo();
         $doacao->usuario_id = null;
-        $doacao->valor = $valor;
+        $doacao->valor = (float) $dados['valor'];
         $doacao->status = 'aguardando';
 
         // --- CAPTURA OS NOVOS DADOS ---
@@ -64,14 +113,14 @@ class DoacaoControlador extends Controlador
 
         if (!$doacao->salvar()) {
             $this->mensagem->erro('Erro ao gerar doação no banco. Tente novamente.')->flash();
-            Helpers::redirecionar('doar');
+            Helpers::redirecionar($rotaFormulario);
             return;
         }
 
         $idDoacao = $doacao->id;
 
         $controladorIP = new PagamentoInfinitepayControlador();
-        $resultado = $controladorIP->processar($doacao, $isRecorrente);
+        $resultado = $controladorIP->processar($doacao, $isRecorrente, $contaAntiga);
 
         if ($resultado['erro']) {
             $doacaoFalha = (new DoacaoModelo())->buscaPorId($idDoacao);
@@ -79,7 +128,7 @@ class DoacaoControlador extends Controlador
             $doacaoFalha->salvar();
 
             $this->mensagem->erro($resultado['mensagem'])->flash();
-            Helpers::redirecionar('doar');
+            Helpers::redirecionar($rotaFormulario);
             return;
         }
 
@@ -93,7 +142,7 @@ class DoacaoControlador extends Controlador
             $textoErro = is_object($erroBancodados) ? $erroBancodados->getMessage() : (string)$erroBancodados;
 
             $this->mensagem->erro("Falha no banco de dados: " . $textoErro)->flash();
-            Helpers::redirecionar('doar');
+            Helpers::redirecionar($rotaFormulario);
             return;
         }
 
