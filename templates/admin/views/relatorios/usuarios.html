@@ -10,18 +10,21 @@
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
             <div>
-                <h4 class="fw-bold mb-0">Relatório Completo de Cadastrados</h4>
+                <h4 class="fw-bold mb-0">Relatório Completo das Famílias</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
                                 class="text-decoration-none">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ url('admin/relatorios') }}"
                                 class="text-decoration-none">Relatórios</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Cadastrados</li>
+                        <li class="breadcrumb-item active" aria-current="page">Famílias</li>
                     </ol>
                 </nav>
             </div>
             <div class="d-flex gap-2 rel-esconde-impressao">
+                <a href="{{ url('admin/relatorios/situacao') }}" class="btn btn-outline-dark rounded-pill shadow-sm">
+                    <i class="fas fa-chart-pie me-2"></i> Por situação
+                </a>
                 <a href="{{ url('admin/relatorios/exportar') }}{% if consulta %}?{{ consulta }}{% endif %}"
                     class="btn btn-success rounded-pill shadow-sm">
                     <i class="fas fa-file-csv me-2"></i> Baixar CSV
@@ -42,7 +45,20 @@
                     <div class="col-md-4">
                         <label class="form-label small fw-bold text-muted mb-1" for="busca">Buscar</label>
                         <input type="search" class="form-control form-control-sm" id="busca" name="busca"
-                            value="{{ filtros.busca }}" placeholder="Nome, e-mail, telefone, CPF, CEP, rua, cidade">
+                            value="{{ filtros.busca }}" placeholder="Nome, telefone, e-mail, CPF, CEP, rua, relato">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted mb-1" for="situacao">Situação da família</label>
+                        <select class="form-select form-select-sm" id="situacao" name="situacao">
+                            <option value="">Todas</option>
+                            {% for chave, rotulo in rotulosSituacoes %}
+                            <option value="{{ chave }}" {% if filtros.situacao == chave %}selected{% endif %}>{{ rotulo }}</option>
+                            {% endfor %}
+                            <option value="sem_informacao" {% if filtros.situacao == 'sem_informacao' %}selected{% endif %}>
+                                Nenhuma situação identificada
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-md-2">
@@ -95,11 +111,12 @@
                     </div>
 
                     <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted mb-1" for="status">Situação</label>
-                        <select class="form-select form-select-sm" id="status" name="status">
-                            <option value="">Todas</option>
-                            <option value="1" {% if filtros.status == '1' %}selected{% endif %}>Ativos</option>
-                            <option value="0" {% if filtros.status == '0' %}selected{% endif %}>Inativos</option>
+                        <label class="form-label small fw-bold text-muted mb-1" for="temas_min">Demandas citadas</label>
+                        <select class="form-select form-select-sm" id="temas_min" name="temas_min">
+                            <option value="">Qualquer</option>
+                            <option value="2" {% if filtros.temas_min == '2' %}selected{% endif %}>2 ou mais</option>
+                            <option value="3" {% if filtros.temas_min == '3' %}selected{% endif %}>3 ou mais</option>
+                            <option value="4" {% if filtros.temas_min == '4' %}selected{% endif %}>4 ou mais</option>
                         </select>
                     </div>
 
@@ -110,16 +127,16 @@
                             <option value="antigos" {% if filtros.ordem == 'antigos' %}selected{% endif %}>Mais antigos</option>
                             <option value="nome" {% if filtros.ordem == 'nome' %}selected{% endif %}>Nome (A-Z)</option>
                             <option value="cidade" {% if filtros.ordem == 'cidade' %}selected{% endif %}>Cidade</option>
-                            <option value="repetidos" {% if filtros.ordem == 'repetidos' %}selected{% endif %}>Mais repetidos</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
-                        <div class="form-check mt-3">
-                            <input class="form-check-input" type="checkbox" value="1" id="repetidos" name="repetidos"
-                                {% if filtros.repetidos == '1' %}checked{% endif %}>
-                            <label class="form-check-label small" for="repetidos">Só com repetição</label>
-                        </div>
+                        <label class="form-label small fw-bold text-muted mb-1" for="status">Cadastro</label>
+                        <select class="form-select form-select-sm" id="status" name="status">
+                            <option value="">Todos</option>
+                            <option value="1" {% if filtros.status == '1' %}selected{% endif %}>Ativos</option>
+                            <option value="0" {% if filtros.status == '0' %}selected{% endif %}>Inativos</option>
+                        </select>
                     </div>
 
                     <div class="col-md-2 d-flex gap-2">
@@ -139,9 +156,9 @@
         <p class="text-muted small mb-3">
             {% if total > 0 %}
             Mostrando <strong>{{ primeiro }}</strong> a <strong>{{ ultimo }}</strong> de
-            <strong>{{ total }}</strong> pessoa(s). Duplicados agrupados, administradores fora.
+            <strong>{{ total }}</strong> família(s). Uma linha por família.
             {% else %}
-            Nenhuma pessoa encontrada com esses filtros.
+            Nenhuma família encontrada com esses filtros.
             {% endif %}
             Gerado em {{ geradoEm }}.
         </p>
@@ -154,7 +171,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Pessoa</th>
+                                <th>Família e situação</th>
                                 <th>Contato</th>
                                 <th>Endereço</th>
                                 <th>Cadastro</th>
@@ -169,11 +186,11 @@
                                 <td class="small text-muted">{{ pessoa.id }}</td>
                                 <td>
                                     <span class="fw-semibold small d-block">{{ pessoa.nome }}</span>
-                                    {% if pessoa.qtd_registros > 1 %}
-                                    <span class="badge bg-warning text-dark" title="Esta pessoa tem mais de um registro no banco">
-                                        <i class="fas fa-clone me-1"></i>{{ pessoa.qtd_registros }} registros
-                                    </span>
-                                    {% endif %}
+                                    {% for situacao in pessoa.situacoes %}
+                                    <span class="badge bg-light text-dark border fw-normal">{{ situacao }}</span>
+                                    {% else %}
+                                    <span class="badge bg-light text-muted border fw-normal">Situação não informada</span>
+                                    {% endfor %}
                                     {% if pessoa.status != 1 %}
                                     <span class="badge bg-danger">Inativo</span>
                                     {% endif %}
@@ -211,7 +228,7 @@
                             <tr>
                                 <td colspan="8" class="text-center text-muted small py-4">
                                     <i class="fas fa-folder-open fa-2x d-block mb-2 opacity-50"></i>
-                                    Nenhuma pessoa encontrada.
+                                    Nenhuma família encontrada.
                                 </td>
                             </tr>
                             {% endfor %}

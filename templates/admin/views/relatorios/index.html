@@ -10,7 +10,7 @@
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
             <div>
-                <h4 class="fw-bold mb-0">Relatórios do Cadastro</h4>
+                <h4 class="fw-bold mb-0">Relatórios das Famílias</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
@@ -20,6 +20,9 @@
                 </nav>
             </div>
             <div class="d-flex gap-2 rel-esconde-impressao">
+                <a href="{{ url('admin/relatorios/situacao') }}" class="btn btn-outline-dark rounded-pill shadow-sm">
+                    <i class="fas fa-chart-pie me-2"></i> Por situação
+                </a>
                 <a href="{{ url('admin/relatorios/usuarios') }}" class="btn btn-dark rounded-pill shadow-sm">
                     <i class="fas fa-table me-2"></i> Relatório completo
                 </a>
@@ -36,8 +39,8 @@
 
         <p class="text-muted small mb-4">
             <i class="fas fa-user-check me-1"></i>
-            Cada linha é <strong>uma pessoa</strong>: registros repetidos do mesmo cadastro foram agrupados.
-            Administradores do painel não entram na contagem. Gerado em {{ geradoEm }}.
+            Cada linha é <strong>uma família</strong>. Administradores do painel não entram na contagem.
+            Gerado em {{ geradoEm }}.
         </p>
 
         <!-- ── NÚMEROS PRINCIPAIS ── -->
@@ -46,24 +49,23 @@
                 <div class="card border-0 shadow-sm p-3 h-100 border-start border-dark border-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted text-uppercase fw-bold">Pessoas cadastradas</small>
+                            <small class="text-muted text-uppercase fw-bold">Famílias cadastradas</small>
                             <h3 class="fw-bold mb-0">{{ resumo.pessoas|default(0) }}</h3>
-                            <small class="text-muted">{{ resumo.registros|default(0) }} registros no banco</small>
+                            <small class="text-muted">{{ resumo.com_endereco|default(0) }} com endereço</small>
                         </div>
                         <i class="fas fa-users fa-2x text-dark opacity-25"></i>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-xl-3">
-                <div class="card border-0 shadow-sm p-3 h-100 border-start border-warning border-4">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-danger border-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted text-uppercase fw-bold">Registros repetidos</small>
-                            <h3 class="fw-bold mb-0">{{ resumo.repetidos|default(0) }}</h3>
-                            <small class="text-muted">{{ resumo.pessoas_repetidas|default(0) }} pessoas com mais de um
-                                cadastro</small>
+                            <small class="text-muted text-uppercase fw-bold">Com situação identificada</small>
+                            <h3 class="fw-bold mb-0">{{ resumo.com_situacao|default(0) }}</h3>
+                            <small class="text-muted">{{ semInformacao }} sem informação no relato</small>
                         </div>
-                        <i class="fas fa-clone fa-2x text-warning opacity-50"></i>
+                        <i class="fas fa-hand-holding-heart fa-2x text-danger opacity-25"></i>
                     </div>
                 </div>
             </div>
@@ -83,13 +85,47 @@
                 <div class="card border-0 shadow-sm p-3 h-100 border-start border-success border-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted text-uppercase fw-bold">Novos em 30 dias</small>
+                            <small class="text-muted text-uppercase fw-bold">Novas em 30 dias</small>
                             <h3 class="fw-bold mb-0">{{ resumo.novos_30|default(0) }}</h3>
                             <small class="text-muted">{{ resumo.novos_365|default(0) }} no último ano</small>
                         </div>
                         <i class="fas fa-user-plus fa-2x text-success opacity-25"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ── SITUAÇÃO DAS FAMÍLIAS ── -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <div>
+                        <h6 class="fw-bold text-uppercase text-muted small mb-1">
+                            <i class="fas fa-hand-holding-heart me-1"></i> Situação das famílias
+                        </h6>
+                        <p class="text-muted small mb-0">
+                            O que mais aparece nos relatos. Uma família pode citar mais de uma situação.
+                        </p>
+                    </div>
+                    <a href="{{ url('admin/relatorios/situacao') }}" class="btn btn-sm btn-outline-dark rounded-pill">
+                        Relatório por situação <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+
+                {% for item in situacoes %}
+                <a href="{{ url('admin/relatorios/usuarios') }}?situacao={{ item.chave }}"
+                    class="text-decoration-none text-reset">
+                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                        <span>{{ item.rotulo }}</span>
+                        <span class="fw-bold">{{ item.total }} <span
+                                class="text-muted fw-normal">({{ item.percentual }}%)</span></span>
+                    </div>
+                    <div class="rel-barra mb-3">
+                        <div class="rel-barra-preenchida {% if item.percentual >= 30 %}bg-danger{% elseif item.percentual >= 10 %}bg-warning{% else %}bg-secondary{% endif %}"
+                            style="width: {{ item.percentual }}%"></div>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
 
@@ -138,7 +174,7 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="fw-bold text-uppercase text-muted small mb-3">
-                            <i class="fas fa-clock me-1"></i> Há quanto tempo estão cadastrados
+                            <i class="fas fa-clock me-1"></i> Há quanto tempo estão cadastradas
                         </h6>
 
                         {% for faixa in faixas %}
@@ -158,7 +194,7 @@
                         <hr class="my-3">
 
                         <h6 class="fw-bold text-uppercase text-muted small mb-3">
-                            <i class="fas fa-circle-check me-1"></i> Situação
+                            <i class="fas fa-circle-check me-1"></i> Situação do cadastro
                         </h6>
                         <div class="d-flex justify-content-between small mb-1">
                             <span class="text-muted">Ativos</span>
@@ -220,7 +256,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Estado</th>
-                                        <th class="text-end">Pessoas</th>
+                                        <th class="text-end">Famílias</th>
                                         <th style="width: 40%"></th>
                                     </tr>
                                 </thead>
@@ -257,41 +293,6 @@
             </div>
         </div>
 
-        <!-- ── DUPLICADOS ── -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                    <div>
-                        <h6 class="fw-bold text-uppercase text-muted small mb-1">
-                            <i class="fas fa-clone me-1"></i> Registros repetidos encontrados
-                        </h6>
-                        <p class="text-muted small mb-0">
-                            O relatório já agrupa os repetidos. Esta lista serve para você limpar o banco.
-                        </p>
-                    </div>
-                    <a href="{{ url('admin/relatorios/duplicados') }}" class="btn btn-sm btn-outline-dark rounded-pill">
-                        Ver e resolver <i class="fas fa-arrow-right ms-1"></i>
-                    </a>
-                </div>
-
-                <div class="row g-2">
-                    {% set rotulos = {'pessoa': 'Mesma pessoa (nome + telefone)', 'telefone': 'Mesmo telefone', 'nome': 'Mesmo nome', 'cpf': 'Mesmo CPF', 'email': 'Mesmo e-mail'} %}
-                    {% for chave, dados in duplicados %}
-                    <div class="col-6 col-lg">
-                        <a href="{{ url('admin/relatorios/duplicados') }}?criterio={{ chave }}"
-                            class="text-decoration-none text-reset">
-                            <div class="border rounded-3 p-3 h-100 {% if dados.excedentes > 0 %}border-warning bg-warning bg-opacity-10{% endif %}">
-                                <small class="text-muted d-block">{{ rotulos[chave] }}</small>
-                                <span class="fs-4 fw-bold">{{ dados.excedentes }}</span>
-                                <small class="text-muted d-block">em {{ dados.grupos }} grupo(s)</small>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
         <!-- ── ÚLTIMOS CADASTROS ── -->
         <div class="card border-0 shadow-sm">
             <div class="card-body">
@@ -306,7 +307,7 @@
                     <table class="table table-sm table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Nome</th>
+                                <th>Família</th>
                                 <th>Telefone</th>
                                 <th>Endereço</th>
                                 <th>Cadastrado</th>
@@ -319,6 +320,9 @@
                                 <td class="small">
                                     <a href="{{ url('admin/usuarios/visualizar/' ~ pessoa.id) }}"
                                         class="text-decoration-none fw-semibold">{{ pessoa.nome }}</a>
+                                    {% for situacao in pessoa.situacoes|slice(0, 2) %}
+                                    <span class="badge bg-light text-dark border fw-normal">{{ situacao }}</span>
+                                    {% endfor %}
                                 </td>
                                 <td class="small">{{ pessoa.telefone_formatado }}</td>
                                 <td class="small text-muted">

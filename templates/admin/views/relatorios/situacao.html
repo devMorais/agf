@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Situação das Famílias</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('admin/relatorios') }}"
+                                class="text-decoration-none">Relatórios</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Situação</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2 rel-esconde-impressao">
+                <a href="{{ url('admin/relatorios/usuarios') }}{% if consulta %}?{{ consulta }}{% endif %}"
+                    class="btn btn-dark rounded-pill shadow-sm">
+                    <i class="fas fa-table me-2"></i> Ver as famílias
+                </a>
+                <a href="{{ url('admin/relatorios/exportar') }}{% if consulta %}?{{ consulta }}{% endif %}"
+                    class="btn btn-success rounded-pill shadow-sm">
+                    <i class="fas fa-file-csv me-2"></i> Baixar CSV
+                </a>
+                <button type="button" class="btn btn-outline-secondary rounded-pill" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        {{ flash() }}
+
+        <div class="alert alert-light border small">
+            <i class="fas fa-circle-info me-1"></i>
+            <strong>Como esta classificação é feita:</strong> o cadastro não tem um campo de situação, então cada
+            família é classificada pelo que ela própria escreveu no relato do cadastro. Uma família pode aparecer
+            em mais de uma situação, e relatos muito curtos ou com erros de digitação podem não ser identificados.
+            Use como um mapa de demandas, e não como dado oficial.
+        </div>
+
+        <!-- ── FILTROS ── -->
+        <div class="card border-0 shadow-sm mb-4 rel-esconde-impressao">
+            <div class="card-body">
+                <form method="GET" action="{{ url('admin/relatorios/situacao') }}" class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1" for="estado">Estado</label>
+                        <select class="form-select form-select-sm" id="estado" name="estado">
+                            <option value="">Todos</option>
+                            {% for uf in estados %}
+                            <option value="{{ uf }}" {% if filtros.estado == uf %}selected{% endif %}>{{ uf }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1" for="de">Cadastrado de</label>
+                        <input type="date" class="form-control form-control-sm" id="de" name="de" value="{{ filtros.de }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1" for="ate">até</label>
+                        <input type="date" class="form-control form-control-sm" id="ate" name="ate" value="{{ filtros.ate }}">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-dark rounded-pill w-100">
+                            <i class="fas fa-filter me-1"></i> Filtrar
+                        </button>
+                        <a href="{{ url('admin/relatorios/situacao') }}"
+                            class="btn btn-sm btn-outline-secondary rounded-pill" title="Limpar filtros">
+                            <i class="fas fa-eraser"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ── NÚMEROS ── -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-dark border-4">
+                    <small class="text-muted text-uppercase fw-bold">Famílias analisadas</small>
+                    <h3 class="fw-bold mb-0">{{ pessoas }}</h3>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-danger border-4">
+                    <small class="text-muted text-uppercase fw-bold">Mais de uma demanda</small>
+                    <h3 class="fw-bold mb-0">{{ tresOuMais }}</h3>
+                    <small class="text-muted">com 3 ou mais situações citadas</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-primary border-4">
+                    <small class="text-muted text-uppercase fw-bold">Média de situações</small>
+                    <h3 class="fw-bold mb-0">{{ mediaTemas }}</h3>
+                    <small class="text-muted">por família</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-secondary border-4">
+                    <small class="text-muted text-uppercase fw-bold">Sem informação</small>
+                    <h3 class="fw-bold mb-0">{{ semInformacao }}</h3>
+                    <small class="text-muted">o relato não permite classificar</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SITUAÇÕES ── -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-uppercase text-muted small mb-1">
+                    <i class="fas fa-chart-bar me-1"></i> O que as famílias relatam
+                </h6>
+                <p class="text-muted small mb-4">Clique numa situação para ver a lista de famílias.</p>
+
+                {% for item in lista %}
+                <a href="{{ url('admin/relatorios/usuarios') }}?situacao={{ item.chave }}{% if consulta %}&{{ consulta }}{% endif %}"
+                    class="text-decoration-none text-reset">
+                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                        <span>{{ item.rotulo }}</span>
+                        <span class="fw-bold">
+                            {{ item.total }} <span class="text-muted fw-normal">({{ item.percentual }}%)</span>
+                        </span>
+                    </div>
+                    <div class="rel-barra mb-3">
+                        <div class="rel-barra-preenchida {% if item.percentual >= 30 %}bg-danger{% elseif item.percentual >= 10 %}bg-warning{% else %}bg-secondary{% endif %}"
+                            style="width: {{ item.percentual }}%"></div>
+                    </div>
+                </a>
+                {% endfor %}
+
+                <a href="{{ url('admin/relatorios/usuarios') }}?situacao=sem_informacao{% if consulta %}&{{ consulta }}{% endif %}"
+                    class="text-decoration-none text-reset">
+                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                        <span class="text-muted">Nenhuma situação identificada no relato</span>
+                        <span class="fw-bold text-muted">{{ semInformacao }}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- ── QUANTAS DEMANDAS POR FAMÍLIA ── -->
+            <div class="col-xl-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-layer-group me-1"></i> Quantas situações cada família cita
+                        </h6>
+
+                        {% for item in distribuicao %}
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span>{{ item.rotulo }}</span>
+                            <span class="fw-bold">{{ item.total }} <span
+                                    class="text-muted fw-normal">({{ item.percentual }}%)</span></span>
+                        </div>
+                        <div class="rel-barra mb-3">
+                            <div class="rel-barra-preenchida bg-dark" style="width: {{ item.percentual }}%"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PRIORIDADE ── -->
+            <div class="col-xl-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-triangle-exclamation me-1"></i> Onde olhar primeiro
+                        </h6>
+
+                        <p class="small text-muted">
+                            Famílias que citam várias situações ao mesmo tempo tendem a estar em situação mais grave.
+                        </p>
+
+                        <div class="list-group list-group-flush">
+                            <a href="{{ url('admin/relatorios/usuarios') }}?temas_min=3{% if consulta %}&{{ consulta }}{% endif %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                                <span class="small">Com 3 ou mais situações</span>
+                                <span class="badge bg-danger rounded-pill">{{ tresOuMais }}</span>
+                            </a>
+                            <a href="{{ url('admin/relatorios/usuarios') }}?temas_min=2{% if consulta %}&{{ consulta }}{% endif %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                                <span class="small">Com 2 ou mais situações</span>
+                                <span class="badge bg-warning text-dark rounded-pill">ver lista</span>
+                            </a>
+                            <a href="{{ url('admin/relatorios/usuarios') }}?endereco=sem{% if consulta %}&{{ consulta }}{% endif %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                                <span class="small">Sem endereço cadastrado</span>
+                                <span class="badge bg-secondary rounded-pill">ver lista</span>
+                            </a>
+                            <a href="{{ url('admin/relatorios/usuarios') }}?situacao=sem_informacao{% if consulta %}&{{ consulta }}{% endif %}"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+                                <span class="small">Relato incompleto, precisa de contato</span>
+                                <span class="badge bg-secondary rounded-pill">{{ semInformacao }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-muted small mt-3">Gerado em {{ geradoEm }}.</p>
+
+    </main>
+    {% include 'rodape.html' %}
+</div>
+
+<style>
+    .rel-barra {
+        background: #edf2f7;
+        border-radius: 20px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .rel-barra-preenchida {
+        height: 100%;
+        border-radius: 20px;
+        transition: width .4s ease;
+    }
+
+    @media print {
+        .sidebar,
+        .rel-esconde-impressao,
+        nav[aria-label="breadcrumb"] {
+            display: none !important;
+        }
+
+        .conteudo {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .card {
+            break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+
+{% endblock %}

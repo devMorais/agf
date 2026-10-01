@@ -64,7 +64,7 @@ try {
         //ADMIN RELATORIOS
         SimpleRouter::get(URL_ADMIN . 'relatorios', 'AdminRelatorios@index');
         SimpleRouter::get(URL_ADMIN . 'relatorios/usuarios', 'AdminRelatorios@usuarios');
-        SimpleRouter::get(URL_ADMIN . 'relatorios/duplicados', 'AdminRelatorios@duplicados');
+        SimpleRouter::get(URL_ADMIN . 'relatorios/situacao', 'AdminRelatorios@situacao');
         SimpleRouter::get(URL_ADMIN . 'relatorios/exportar', 'AdminRelatorios@exportar');
 
         //ADMIN USUARIOS

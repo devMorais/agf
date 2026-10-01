@@ -7,9 +7,9 @@ use sistema\Modelo\RelatorioModelo;
 /**
  * Classe AdminRelatorios
  *
- * Relatórios de pessoas cadastradas: contato, endereço, tempo de cadastro
- * e registros repetidos. Os duplicados são agrupados, então cada linha
- * dos relatórios é uma pessoa, não um registro do banco.
+ * Relatórios das famílias cadastradas: contato, endereço, tempo de cadastro
+ * e situação. Registros repetidos da mesma pessoa são agrupados, então cada
+ * linha dos relatórios é uma pessoa, não um registro do banco.
  *
  * @author Fernando Aguiar
  */
@@ -34,25 +34,45 @@ class AdminRelatorios extends AdminControlador
     public function index(): void
     {
         $resumo = $this->relatorio->resumo();
-        $porMes = $this->relatorio->porMes(12);
-        $porAno = $this->relatorio->porAno();
-        $porEstado = $this->relatorio->porEstado();
-        $porCidade = $this->relatorio->porCidade(8);
-        $faixas = $this->relatorio->faixasTempo();
-
+        $situacoes = $this->relatorio->situacoes();
         $pessoas = (int) ($resumo['pessoas'] ?? 0);
 
         echo $this->template->renderizar('relatorios/index.html', [
             'resumo' => $resumo,
             'tempoMedio' => $this->tempoCadastro($resumo['media_dias'] ?? null),
-            'duplicados' => $this->relatorio->resumoDuplicados(),
-            'porMes' => $this->comPercentual($porMes, 'total'),
-            'porAno' => $this->comPercentual($porAno, 'total'),
-            'porEstado' => $this->comPercentual($porEstado, 'total'),
-            'porCidade' => $this->comPercentual($porCidade, 'total'),
-            'faixas' => $this->faixasEmLista($faixas, $pessoas),
+            'situacoes' => array_slice($this->situacoesEmLista($situacoes, $pessoas), 0, 6),
+            'semInformacao' => (int) ($situacoes['sem_informacao'] ?? 0),
+            'porMes' => $this->comPercentual($this->relatorio->porMes(12), 'total'),
+            'porAno' => $this->comPercentual($this->relatorio->porAno(), 'total'),
+            'porEstado' => $this->comPercentual($this->relatorio->porEstado(), 'total'),
+            'porCidade' => $this->comPercentual($this->relatorio->porCidade(8), 'total'),
+            'faixas' => $this->faixasEmLista($this->relatorio->faixasTempo(), $pessoas),
             'qualidade' => $this->qualidade($resumo, $pessoas),
             'ultimas' => $this->prepararPessoas($this->relatorio->pessoas(['ordem' => 'recentes'], 8)),
+            'geradoEm' => date('d/m/Y H:i'),
+        ]);
+    }
+
+    /**
+     * Relatório por situação das famílias
+     * @return void
+     */
+    public function situacao(): void
+    {
+        $filtros = $this->filtros();
+        $situacoes = $this->relatorio->situacoes($filtros);
+        $pessoas = (int) ($situacoes['pessoas'] ?? 0);
+
+        echo $this->template->renderizar('relatorios/situacao.html', [
+            'lista' => $this->situacoesEmLista($situacoes, $pessoas),
+            'pessoas' => $pessoas,
+            'semInformacao' => (int) ($situacoes['sem_informacao'] ?? 0),
+            'tresOuMais' => (int) ($situacoes['tres_ou_mais'] ?? 0),
+            'mediaTemas' => $situacoes['media_temas'] ?? '0',
+            'distribuicao' => $this->distribuicaoEmLista($this->relatorio->distribuicaoTemas(), $pessoas),
+            'filtros' => $filtros,
+            'estados' => $this->relatorio->estados(),
+            'consulta' => $this->consulta($filtros),
             'geradoEm' => date('d/m/Y H:i'),
         ]);
     }
@@ -74,33 +94,13 @@ class AdminRelatorios extends AdminControlador
             'pessoas' => $this->prepararPessoas($this->relatorio->pessoas($filtros, self::POR_PAGINA, $offset)),
             'filtros' => $filtros,
             'estados' => $this->relatorio->estados(),
+            'rotulosSituacoes' => RelatorioModelo::rotulosSituacoes(),
             'total' => $total,
             'pagina' => $pagina,
             'paginas' => $paginas,
             'primeiro' => $total ? $offset + 1 : 0,
             'ultimo' => min($offset + self::POR_PAGINA, $total),
             'consulta' => $this->consulta($filtros),
-            'geradoEm' => date('d/m/Y H:i'),
-        ]);
-    }
-
-    /**
-     * Registros repetidos agrupados por critério
-     * @return void
-     */
-    public function duplicados(): void
-    {
-        $criterio = (string) ($this->filtros()['criterio'] ?? 'pessoa');
-
-        $grupos = array_map(
-            fn(array $grupo): array => $this->prepararPessoas($grupo),
-            $this->relatorio->duplicados($criterio)
-        );
-
-        echo $this->template->renderizar('relatorios/duplicados.html', [
-            'criterio' => $criterio,
-            'grupos' => $grupos,
-            'resumo' => $this->relatorio->resumoDuplicados(),
             'geradoEm' => date('d/m/Y H:i'),
         ]);
     }
@@ -114,7 +114,7 @@ class AdminRelatorios extends AdminControlador
         $filtros = $this->filtros();
         $pessoas = $this->prepararPessoas($this->relatorio->pessoas($filtros, 5000));
 
-        $arquivo = 'relatorio-cadastrados-' . date('Y-m-d-His') . '.csv';
+        $arquivo = 'relatorio-familias-' . date('Y-m-d-His') . '.csv';
 
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="' . $arquivo . '"');
@@ -141,8 +141,8 @@ class AdminRelatorios extends AdminControlador
             'Tempo de cadastro',
             'Dias cadastrado',
             'Ultimo acesso',
-            'Situacao',
-            'Registros no banco',
+            'Situacao (indicios no relato)',
+            'Situacao do cadastro',
         ], ';');
 
         foreach ($pessoas as $pessoa) {
@@ -161,8 +161,8 @@ class AdminRelatorios extends AdminControlador
                 $pessoa['tempo_cadastro'],
                 $pessoa['dias_cadastrado'],
                 $pessoa['ultimo_acesso_br'],
+                implode(' | ', $pessoa['situacoes']),
                 $pessoa['status'] == 1 ? 'Ativo' : 'Inativo',
-                $pessoa['qtd_registros'],
             ], ';');
         }
 
@@ -178,7 +178,7 @@ class AdminRelatorios extends AdminControlador
     {
         $dados = filter_input_array(INPUT_GET, FILTER_DEFAULT) ?: [];
 
-        $campos = ['busca', 'estado', 'cidade', 'de', 'ate', 'status', 'tempo', 'endereco', 'repetidos', 'ordem', 'pagina', 'criterio'];
+        $campos = ['busca', 'estado', 'cidade', 'de', 'ate', 'status', 'tempo', 'endereco', 'situacao', 'temas_min', 'ordem', 'pagina'];
         $filtros = [];
 
         foreach ($campos as $campo) {
@@ -196,7 +196,7 @@ class AdminRelatorios extends AdminControlador
      */
     private function consulta(array $filtros): string
     {
-        unset($filtros['pagina'], $filtros['criterio']);
+        unset($filtros['pagina']);
 
         return http_build_query(array_filter($filtros, fn($valor) => $valor !== '' && $valor !== null));
     }
@@ -208,6 +208,8 @@ class AdminRelatorios extends AdminControlador
      */
     private function prepararPessoas(array $pessoas): array
     {
+        $rotulos = RelatorioModelo::rotulosSituacoes();
+
         foreach ($pessoas as &$pessoa) {
             $pessoa['telefone_formatado'] = $this->formatarTelefone($pessoa['telefone'] ?? null);
             $pessoa['cpf_formatado'] = $this->formatarCpf($pessoa['cpf'] ?? null);
@@ -215,10 +217,74 @@ class AdminRelatorios extends AdminControlador
             $pessoa['tempo_cadastro'] = $this->tempoCadastro($pessoa['dias_cadastrado'] ?? null);
             $pessoa['cadastrado_br'] = $this->dataBr($pessoa['cadastrado_em'] ?? null);
             $pessoa['ultimo_acesso_br'] = $this->dataBr($pessoa['ultimo_login'] ?? null, 'Nunca acessou');
-            $pessoa['qtd_registros'] = (int) ($pessoa['qtd_registros'] ?? 1);
+
+            $situacoes = [];
+
+            foreach ($rotulos as $chave => $rotulo) {
+                if (!empty($pessoa['sit_' . $chave])) {
+                    $situacoes[] = $rotulo;
+                }
+            }
+
+            $pessoa['situacoes'] = $situacoes;
         }
 
         return $pessoas;
+    }
+
+    /**
+     * Situações em lista ordenada, com percentual, para as telas
+     * @param array $situacoes
+     * @param int $pessoas
+     * @return array
+     */
+    private function situacoesEmLista(array $situacoes, int $pessoas): array
+    {
+        $lista = [];
+
+        foreach (RelatorioModelo::rotulosSituacoes() as $chave => $rotulo) {
+            $total = (int) ($situacoes[$chave] ?? 0);
+
+            $lista[] = [
+                'chave' => $chave,
+                'rotulo' => $rotulo,
+                'total' => $total,
+                'percentual' => $pessoas > 0 ? round(($total / $pessoas) * 100) : 0,
+            ];
+        }
+
+        usort($lista, fn(array $a, array $b): int => $b['total'] <=> $a['total']);
+
+        return $lista;
+    }
+
+    /**
+     * Distribuição por quantidade de situações citadas
+     * @param array $linhas
+     * @param int $pessoas
+     * @return array
+     */
+    private function distribuicaoEmLista(array $linhas, int $pessoas): array
+    {
+        $lista = [];
+
+        foreach ($linhas as $linha) {
+            $temas = (int) $linha['temas'];
+            $total = (int) $linha['total'];
+
+            $lista[] = [
+                'temas' => $temas,
+                'rotulo' => match (true) {
+                    $temas === 0 => 'Nenhuma situação identificada',
+                    $temas === 1 => '1 situação citada',
+                    default => $temas . ' situações citadas',
+                },
+                'total' => $total,
+                'percentual' => $pessoas > 0 ? round(($total / $pessoas) * 100) : 0,
+            ];
+        }
+
+        return $lista;
     }
 
     /**
@@ -289,7 +355,8 @@ class AdminRelatorios extends AdminControlador
             'Logradouro' => 'com_logradouro',
             'Cidade e estado' => 'com_cidade',
             'CPF' => 'com_cpf',
-            'História contada' => 'com_historia',
+            'Relato da família' => 'com_historia',
+            'Situação identificada' => 'com_situacao',
         ];
 
         $qualidade = [];

@@ -26,6 +26,7 @@ class RelatorioModelo
     /**
      * Chave que identifica a mesma pessoa em registros diferentes:
      * nome + telefone quando existem os dois, senão CPF, senão e-mail.
+     * Serve para o relatório mostrar uma linha por pessoa.
      */
     private const CHAVE_PESSOA = "CASE
             WHEN " . self::NOME_NORM . " <> '' AND " . self::TEL_NORM . " <> ''
@@ -35,8 +36,8 @@ class RelatorioModelo
         END";
 
     /**
-     * Base de todos os relatórios: uma linha por pessoa (duplicados agrupados),
-     * já com o endereço mais recente de cada uma.
+     * Base de todos os relatórios: uma linha por pessoa (repetições agrupadas,
+     * mantendo o registro mais antigo), já com o endereço mais recente.
      */
     private const DE_PESSOAS = "
         FROM (
@@ -52,13 +53,64 @@ class RelatorioModelo
         ) ue ON ue.usuario_id = u.id
         LEFT JOIN enderecos e ON e.id = ue.id_endereco";
 
-    /** Critérios aceitos no relatório de duplicados. */
-    private const CRITERIOS = [
-        'pessoa' => self::CHAVE_PESSOA,
-        'telefone' => self::TEL_NORM,
-        'nome' => self::NOME_NORM,
-        'cpf' => self::CPF_NORM,
-        'email' => self::EMAIL_NORM,
+    /**
+     * Situações das famílias, identificadas por indícios no relato que a própria
+     * pessoa escreve no cadastro (coluna usuarios.texto). Não existe campo
+     * estruturado para isso no banco.
+     *
+     * A collation do banco é utf8mb4_unicode_ci, então a busca já ignora
+     * acentuação e maiúsculas: "desempreg" encontra "Desempregada".
+     * Uma família pode cair em várias situações ao mesmo tempo.
+     */
+    private const SITUACOES = [
+        'desemprego' => [
+            'rotulo' => 'Desemprego ou sem renda',
+            'palavras' => ['desempreg', 'sem emprego', 'sem trabalho', 'nao trabalho', 'sem renda', 'sem servico', 'estou parada', 'desocupad'],
+        ],
+        'informal' => [
+            'rotulo' => 'Trabalho informal ou bico',
+            'palavras' => ['bico', 'diarista', 'faxina', 'autonom', 'catador', 'reciclagem', 'ambulante'],
+        ],
+        'moradia' => [
+            'rotulo' => 'Moradia ou aluguel',
+            'palavras' => ['aluguel', 'alugada', 'alugado', 'moradia', 'despejo', 'invasao', 'barraco', 'sem casa', 'casa cedida', 'mora de favor'],
+        ],
+        'saude' => [
+            'rotulo' => 'Problema de saúde na família',
+            'palavras' => ['doen', 'enferm', 'cancer', 'diabet', 'remedio', 'tratamento', 'hospital', 'cirurgia', 'acamad', 'depress', 'pressao alta', 'avc', 'derrame', 'medicament'],
+        ],
+        'deficiencia' => [
+            'rotulo' => 'Deficiência ou cuidado especial',
+            'palavras' => ['deficien', 'cadeirante', 'autis', 'sindrome', 'filha especial', 'filho especial', 'necessidades especiais', 'laudo'],
+        ],
+        'criancas' => [
+            'rotulo' => 'Crianças em casa',
+            'palavras' => ['filh', 'crian', 'bebe', 'neto', 'neta'],
+        ],
+        'gestante' => [
+            'rotulo' => 'Gestante',
+            'palavras' => ['gestant', 'gravid', 'gestac'],
+        ],
+        'idoso' => [
+            'rotulo' => 'Idoso ou aposentado',
+            'palavras' => ['idos', 'aposentad', 'terceira idade'],
+        ],
+        'beneficio' => [
+            'rotulo' => 'Recebe benefício social',
+            'palavras' => ['bolsa familia', 'bpc', 'auxilio', 'beneficio', 'inss', 'cadunico', 'cadastro unico', 'pensao'],
+        ],
+        'sozinha' => [
+            'rotulo' => 'Responsável sozinha pela casa',
+            'palavras' => ['mae solteira', 'mae solo', 'sozinha', 'sozinho', 'viuv', 'separad', 'abandon', 'pai solteiro'],
+        ],
+        'alimentacao' => [
+            'rotulo' => 'Precisa de alimento',
+            'palavras' => ['cesta', 'aliment', 'comida', 'fome', 'leite', 'fralda'],
+        ],
+        'contas' => [
+            'rotulo' => 'Contas atrasadas ou dívidas',
+            'palavras' => ['conta de luz', 'conta de agua', 'energia', 'divida', 'atrasad'],
+        ],
     ];
 
     /** Ordenações aceitas na listagem. */
@@ -67,11 +119,25 @@ class RelatorioModelo
         'antigos' => 'u.cadastrado_em ASC',
         'nome' => 'u.nome ASC',
         'cidade' => 'e.cidade IS NULL, e.cidade ASC, u.nome ASC',
-        'repetidos' => 'g.qtd_registros DESC, u.nome ASC',
     ];
 
     /**
-     * Números gerais do cadastro, já sem contar duplicados
+     * Rótulos das situações, para montar filtros e legendas
+     * @return array chave => rótulo
+     */
+    public static function rotulosSituacoes(): array
+    {
+        $rotulos = [];
+
+        foreach (self::SITUACOES as $chave => $situacao) {
+            $rotulos[$chave] = $situacao['rotulo'];
+        }
+
+        return $rotulos;
+    }
+
+    /**
+     * Números gerais do cadastro, já sem contar registros repetidos
      * @param array $filtros
      * @return array
      */
@@ -82,8 +148,6 @@ class RelatorioModelo
         $sql = "SELECT
                     COUNT(*) AS pessoas,
                     COALESCE(SUM(g.qtd_registros), 0) AS registros,
-                    COALESCE(SUM(g.qtd_registros), 0) - COUNT(*) AS repetidos,
-                    COALESCE(SUM(g.qtd_registros > 1), 0) AS pessoas_repetidas,
                     COALESCE(SUM(e.id IS NOT NULL), 0) AS com_endereco,
                     COALESCE(SUM(e.cep IS NOT NULL AND e.cep <> ''), 0) AS com_cep,
                     COALESCE(SUM(e.logradouro IS NOT NULL AND e.logradouro <> ''), 0) AS com_logradouro,
@@ -91,6 +155,7 @@ class RelatorioModelo
                     COALESCE(SUM(" . self::TEL_NORM . " <> ''), 0) AS com_telefone,
                     COALESCE(SUM(" . self::CPF_NORM . " <> ''), 0) AS com_cpf,
                     COALESCE(SUM(u.texto IS NOT NULL AND u.texto <> ''), 0) AS com_historia,
+                    COALESCE(SUM(" . $this->expressaoTemas() . " > 0), 0) AS com_situacao,
                     COALESCE(SUM(u.status = 1), 0) AS ativos,
                     COALESCE(SUM(u.status = 0), 0) AS inativos,
                     COALESCE(SUM(u.ultimo_login IS NOT NULL), 0) AS ja_acessaram,
@@ -108,7 +173,8 @@ class RelatorioModelo
     }
 
     /**
-     * Uma linha por pessoa, com contato, endereço e tempo de cadastro
+     * Uma linha por pessoa, com contato, endereço, tempo de cadastro
+     * e as situações identificadas no relato
      * @param array $filtros
      * @param int $limite
      * @param int $offset
@@ -126,7 +192,8 @@ class RelatorioModelo
                        u.cadastrado_em, u.atualizado_em, u.ultimo_login,
                        TIMESTAMPDIFF(DAY, u.cadastrado_em, NOW()) AS dias_cadastrado,
                        e.cep, e.logradouro, e.bairro, e.cidade, e.estado,
-                       g.qtd_registros
+                       " . $this->expressaoTemas() . " AS temas
+                       " . $this->colunasSituacoes() . "
                 " . self::DE_PESSOAS . " {$onde}
                 ORDER BY {$ordem}
                 LIMIT {$limite} OFFSET {$offset}";
@@ -147,6 +214,67 @@ class RelatorioModelo
         $linha = $this->consultar($sql, $parametros);
 
         return (int) ($linha[0]['total'] ?? 0);
+    }
+
+    /**
+     * Quantas famílias em cada situação, pelos indícios do relato
+     * @param array $filtros
+     * @return array
+     */
+    public function situacoes(array $filtros = []): array
+    {
+        [$onde, $parametros] = $this->filtros($filtros);
+
+        $somas = [];
+
+        foreach (array_keys(self::SITUACOES) as $chave) {
+            $somas[] = "COALESCE(SUM(" . $this->condicaoSituacao($chave) . "), 0) AS {$chave}";
+        }
+
+        $sql = "SELECT COUNT(*) AS pessoas,
+                       COALESCE(SUM(" . $this->expressaoTemas() . " = 0), 0) AS sem_informacao,
+                       COALESCE(SUM(" . $this->expressaoTemas() . " >= 3), 0) AS tres_ou_mais,
+                       ROUND(AVG(" . $this->expressaoTemas() . "), 1) AS media_temas,
+                       " . implode(",\n                       ", $somas) . "
+                " . self::DE_PESSOAS . " {$onde}";
+
+        $linha = $this->consultar($sql, $parametros);
+
+        return $linha[0] ?? [];
+    }
+
+    /**
+     * Distribuição das famílias por quantidade de situações citadas
+     * @return array
+     */
+    public function distribuicaoTemas(): array
+    {
+        $sql = "SELECT temas, COUNT(*) AS total
+                  FROM (SELECT " . $this->expressaoTemas() . " AS temas " . self::DE_PESSOAS . ") contagem
+                 GROUP BY temas
+                 ORDER BY temas";
+
+        return $this->consultar($sql);
+    }
+
+    /**
+     * Cruzamento entre situação e estado, para saber onde está cada demanda
+     * @param string $chave
+     * @return array
+     */
+    public function situacaoPorEstado(string $chave): array
+    {
+        if (!isset(self::SITUACOES[$chave])) {
+            return [];
+        }
+
+        $sql = "SELECT COALESCE(NULLIF(TRIM(e.estado), ''), 'Não informado') AS estado, COUNT(*) AS total
+                " . self::DE_PESSOAS . "
+                WHERE " . $this->condicaoSituacao($chave) . "
+                GROUP BY estado
+                ORDER BY total DESC";
+
+        return $this->consultar($sql);
     }
 
     /**
@@ -236,81 +364,6 @@ class RelatorioModelo
     }
 
     /**
-     * Registros repetidos, agrupados pelo critério escolhido
-     * @param string $criterio
-     * @return array lista de grupos, cada um com a chave e os registros
-     */
-    public function duplicados(string $criterio = 'pessoa'): array
-    {
-        $expressao = self::CRITERIOS[$criterio] ?? self::CRITERIOS['pessoa'];
-
-        // Em CPF e telefone o valor vazio não conta como repetição
-        $naoVazio = in_array($criterio, ['telefone', 'cpf'], true) ? "AND {$expressao} <> ''" : '';
-
-        $sql = "SELECT u.id, u.nome, u.email, u.telefone, u.cpf, u.status,
-                       u.cadastrado_em, u.ultimo_login,
-                       TIMESTAMPDIFF(DAY, u.cadastrado_em, NOW()) AS dias_cadastrado,
-                       e.cep, e.logradouro, e.bairro, e.cidade, e.estado,
-                       {$expressao} AS chave
-                  FROM usuarios u
-                  LEFT JOIN (
-                      SELECT usuario_id, MAX(id) AS id_endereco FROM enderecos GROUP BY usuario_id
-                  ) ue ON ue.usuario_id = u.id
-                  LEFT JOIN enderecos e ON e.id = ue.id_endereco
-                 WHERE u.level <> " . self::NIVEL_ADMIN . " {$naoVazio}
-                   AND {$expressao} IN (
-                       SELECT chave_repetida FROM (
-                           SELECT {$expressao} AS chave_repetida
-                             FROM usuarios u
-                            WHERE u.level <> " . self::NIVEL_ADMIN . " {$naoVazio}
-                            GROUP BY chave_repetida
-                           HAVING COUNT(*) > 1
-                       ) repetidos
-                   )
-                 ORDER BY u.nome, u.id";
-
-        $grupos = [];
-
-        foreach ($this->consultar($sql) as $registro) {
-            $grupos[$registro['chave']][] = $registro;
-        }
-
-        return array_values($grupos);
-    }
-
-    /**
-     * Quantos registros repetidos existem em cada critério
-     * @return array
-     */
-    public function resumoDuplicados(): array
-    {
-        $resumo = [];
-
-        foreach (array_keys(self::CRITERIOS) as $criterio) {
-            $expressao = self::CRITERIOS[$criterio];
-            $naoVazio = in_array($criterio, ['telefone', 'cpf'], true) ? "AND {$expressao} <> ''" : '';
-
-            $sql = "SELECT COUNT(*) AS grupos, COALESCE(SUM(qtd) - COUNT(*), 0) AS excedentes
-                      FROM (
-                          SELECT COUNT(*) AS qtd
-                            FROM usuarios u
-                           WHERE u.level <> " . self::NIVEL_ADMIN . " {$naoVazio}
-                           GROUP BY {$expressao}
-                          HAVING COUNT(*) > 1
-                      ) grupos_repetidos";
-
-            $linha = $this->consultar($sql);
-
-            $resumo[$criterio] = [
-                'grupos' => (int) ($linha[0]['grupos'] ?? 0),
-                'excedentes' => (int) ($linha[0]['excedentes'] ?? 0),
-            ];
-        }
-
-        return $resumo;
-    }
-
-    /**
      * Estados disponíveis para o filtro
      * @return array
      */
@@ -325,6 +378,53 @@ class RelatorioModelo
     }
 
     /**
+     * Condição SQL de uma situação. As palavras são fixas no código,
+     * nunca vêm da tela.
+     * @param string $chave
+     * @return string
+     */
+    private function condicaoSituacao(string $chave): string
+    {
+        $partes = [];
+
+        foreach (self::SITUACOES[$chave]['palavras'] as $palavra) {
+            $partes[] = "u.texto LIKE '%" . $palavra . "%'";
+        }
+
+        return '(' . implode(' OR ', $partes) . ')';
+    }
+
+    /**
+     * Quantas situações o relato da pessoa cita
+     * @return string
+     */
+    private function expressaoTemas(): string
+    {
+        $partes = [];
+
+        foreach (array_keys(self::SITUACOES) as $chave) {
+            $partes[] = $this->condicaoSituacao($chave);
+        }
+
+        return '(' . implode(' + ', $partes) . ')';
+    }
+
+    /**
+     * Uma coluna 0/1 por situação, para a listagem marcar as tags de cada pessoa
+     * @return string
+     */
+    private function colunasSituacoes(): string
+    {
+        $colunas = [];
+
+        foreach (array_keys(self::SITUACOES) as $chave) {
+            $colunas[] = $this->condicaoSituacao($chave) . " AS sit_{$chave}";
+        }
+
+        return ', ' . implode(', ', $colunas);
+    }
+
+    /**
      * Monta o WHERE e os parâmetros a partir dos filtros da tela
      * @param array $filtros
      * @return array [string $onde, array $parametros]
@@ -336,8 +436,8 @@ class RelatorioModelo
 
         if (!empty($filtros['busca'])) {
             $onde[] = "(u.nome LIKE :busca OR u.email LIKE :busca OR u.telefone LIKE :busca
-                        OR u.cpf LIKE :busca OR e.cep LIKE :busca OR e.logradouro LIKE :busca
-                        OR e.bairro LIKE :busca OR e.cidade LIKE :busca)";
+                        OR u.cpf LIKE :busca OR u.texto LIKE :busca OR e.cep LIKE :busca
+                        OR e.logradouro LIKE :busca OR e.bairro LIKE :busca OR e.cidade LIKE :busca)";
             $parametros['busca'] = '%' . trim($filtros['busca']) . '%';
         }
 
@@ -366,16 +466,26 @@ class RelatorioModelo
             $parametros['status'] = (int) $filtros['status'];
         }
 
-        if (($filtros['repetidos'] ?? '') === '1') {
-            $onde[] = "g.qtd_registros > 1";
-        }
-
         if (($filtros['endereco'] ?? '') === 'com') {
             $onde[] = "e.id IS NOT NULL";
         }
 
         if (($filtros['endereco'] ?? '') === 'sem') {
             $onde[] = "e.id IS NULL";
+        }
+
+        // Situação: uma das categorias, ou quem não deu indício nenhum
+        $situacao = $filtros['situacao'] ?? '';
+
+        if ($situacao === 'sem_informacao') {
+            $onde[] = $this->expressaoTemas() . " = 0";
+        } elseif ($situacao !== '' && isset(self::SITUACOES[$situacao])) {
+            $onde[] = $this->condicaoSituacao($situacao);
+        }
+
+        if (!empty($filtros['temas_min'])) {
+            $minimo = max(1, min((int) $filtros['temas_min'], count(self::SITUACOES)));
+            $onde[] = $this->expressaoTemas() . " >= {$minimo}";
         }
 
         $faixas = [
