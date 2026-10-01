@@ -61,6 +61,12 @@ try {
         SimpleRouter::get(URL_ADMIN . 'dashboard', 'AdminDashboard@dashboard');
         SimpleRouter::get(URL_ADMIN . 'sair', 'AdminDashboard@sair');
 
+        //ADMIN RELATORIOS
+        SimpleRouter::get(URL_ADMIN . 'relatorios', 'AdminRelatorios@index');
+        SimpleRouter::get(URL_ADMIN . 'relatorios/usuarios', 'AdminRelatorios@usuarios');
+        SimpleRouter::get(URL_ADMIN . 'relatorios/duplicados', 'AdminRelatorios@duplicados');
+        SimpleRouter::get(URL_ADMIN . 'relatorios/exportar', 'AdminRelatorios@exportar');
+
         //ADMIN USUARIOS
         SimpleRouter::get(URL_ADMIN . 'usuarios/listar', 'AdminUsuarios@listar');
         SimpleRouter::match(['get', 'post'], URL_ADMIN . 'usuarios/cadastrar', 'AdminUsuarios@cadastrar');

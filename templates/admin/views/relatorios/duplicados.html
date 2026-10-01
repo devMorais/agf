@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Cadastros Repetidos</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('admin/relatorios') }}"
+                                class="text-decoration-none">Relatórios</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Repetidos</li>
+                    </ol>
+                </nav>
+            </div>
+            <button type="button" class="btn btn-outline-secondary rounded-pill rel-esconde-impressao"
+                onclick="window.print()">
+                <i class="fas fa-print"></i>
+            </button>
+        </div>
+
+        {{ flash() }}
+
+        <div class="alert alert-light border small">
+            <i class="fas fa-circle-info me-1"></i>
+            Nos relatórios, estes registros já aparecem agrupados numa pessoa só, e o mais antigo é mantido.
+            Aqui você vê os registros separados para decidir o que apagar. <strong>Nada é apagado automaticamente.</strong>
+        </div>
+
+        <!-- ── CRITÉRIOS ── -->
+        <ul class="nav nav-pills gap-2 mb-4 rel-esconde-impressao">
+            {% set rotulos = {'pessoa': 'Mesma pessoa (nome + telefone)', 'telefone': 'Mesmo telefone', 'nome': 'Mesmo nome', 'cpf': 'Mesmo CPF', 'email': 'Mesmo e-mail'} %}
+            {% for chave, dados in resumo %}
+            <li class="nav-item">
+                <a class="nav-link {% if criterio == chave %}active bg-dark{% else %}text-dark border{% endif %}"
+                    href="{{ url('admin/relatorios/duplicados') }}?criterio={{ chave }}">
+                    {{ rotulos[chave] }}
+                    <span class="badge {% if criterio == chave %}bg-light text-dark{% elseif dados.excedentes > 0 %}bg-warning text-dark{% else %}bg-light text-muted{% endif %} ms-1">
+                        {{ dados.excedentes }}
+                    </span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if grupos is empty %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-circle-check fa-3x text-success opacity-50 d-block mb-3"></i>
+                <h6 class="fw-bold">Nenhuma repetição por este critério</h6>
+                <p class="text-muted small mb-0">O cadastro está limpo nesse ponto.</p>
+            </div>
+        </div>
+        {% else %}
+
+        <p class="text-muted small mb-3">
+            <strong>{{ grupos|length }}</strong> grupo(s) de registros repetidos. Gerado em {{ geradoEm }}.
+        </p>
+
+        {% for grupo in grupos %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold small">
+                    <i class="fas fa-clone text-warning me-1"></i>
+                    {{ grupo[0].nome }}
+                </span>
+                <span class="badge bg-warning text-dark">{{ grupo|length }} registros</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Nome</th>
+                                <th>Contato</th>
+                                <th>Endereço</th>
+                                <th>Cadastrado</th>
+                                <th>Tempo</th>
+                                <th class="rel-esconde-impressao"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pessoa in grupo %}
+                            <tr>
+                                <td class="small text-muted">
+                                    {{ pessoa.id }}
+                                    {% if loop.first %}
+                                    <span class="badge bg-success" title="Registro mais antigo, mantido nos relatórios">mantido</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small fw-semibold">{{ pessoa.nome }}</td>
+                                <td class="small">
+                                    <span class="d-block">{{ pessoa.telefone_formatado }}</span>
+                                    <span class="text-muted">{{ pessoa.email }}</span>
+                                </td>
+                                <td class="small text-muted">
+                                    {% if pessoa.logradouro or pessoa.cep_formatado != '--' %}
+                                    {{ pessoa.logradouro|default('--') }}
+                                    {% if pessoa.cidade %} — {{ pessoa.cidade }}/{{ pessoa.estado }}{% endif %}
+                                    · CEP {{ pessoa.cep_formatado }}
+                                    {% else %}
+                                    <span class="text-danger">Sem endereço</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">{{ pessoa.cadastrado_br }}</td>
+                                <td class="small">{{ pessoa.tempo_cadastro }}</td>
+                                <td class="text-nowrap rel-esconde-impressao">
+                                    <a href="{{ url('admin/usuarios/visualizar/' ~ pessoa.id) }}" tooltip="tooltip"
+                                        title="Ver ficha completa"><i class="fas fa-eye m-1 text-dark"></i></a>
+                                    <a href="{{ url('admin/usuarios/editar/' ~ pessoa.id) }}" tooltip="tooltip"
+                                        title="Editar"><i class="fas fa-pen m-1 text-primary"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% endif %}
+
+    </main>
+    {% include 'rodape.html' %}
+</div>
+
+<style>
+    @media print {
+        .sidebar,
+        .rel-esconde-impressao,
+        nav[aria-label="breadcrumb"] {
+            display: none !important;
+        }
+
+        .conteudo {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .card {
+            break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+
+{% endblock %}

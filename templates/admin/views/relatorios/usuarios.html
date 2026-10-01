@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Relatório Completo de Cadastrados</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('admin/relatorios') }}"
+                                class="text-decoration-none">Relatórios</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cadastrados</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2 rel-esconde-impressao">
+                <a href="{{ url('admin/relatorios/exportar') }}{% if consulta %}?{{ consulta }}{% endif %}"
+                    class="btn btn-success rounded-pill shadow-sm">
+                    <i class="fas fa-file-csv me-2"></i> Baixar CSV
+                </a>
+                <button type="button" class="btn btn-outline-secondary rounded-pill" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        {{ flash() }}
+
+        <!-- ── FILTROS ── -->
+        <div class="card border-0 shadow-sm mb-4 rel-esconde-impressao">
+            <div class="card-body">
+                <form method="GET" action="{{ url('admin/relatorios/usuarios') }}" class="row g-2 align-items-end">
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted mb-1" for="busca">Buscar</label>
+                        <input type="search" class="form-control form-control-sm" id="busca" name="busca"
+                            value="{{ filtros.busca }}" placeholder="Nome, e-mail, telefone, CPF, CEP, rua, cidade">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="estado">Estado</label>
+                        <select class="form-select form-select-sm" id="estado" name="estado">
+                            <option value="">Todos</option>
+                            {% for uf in estados %}
+                            <option value="{{ uf }}" {% if filtros.estado == uf %}selected{% endif %}>{{ uf }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="cidade">Cidade</label>
+                        <input type="text" class="form-control form-control-sm" id="cidade" name="cidade"
+                            value="{{ filtros.cidade }}" placeholder="Qualquer">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="de">Cadastrado de</label>
+                        <input type="date" class="form-control form-control-sm" id="de" name="de"
+                            value="{{ filtros.de }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="ate">até</label>
+                        <input type="date" class="form-control form-control-sm" id="ate" name="ate"
+                            value="{{ filtros.ate }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="tempo">Tempo de cadastro</label>
+                        <select class="form-select form-select-sm" id="tempo" name="tempo">
+                            <option value="">Qualquer</option>
+                            <option value="ate_30_dias" {% if filtros.tempo == 'ate_30_dias' %}selected{% endif %}>Até 30 dias</option>
+                            <option value="ate_6_meses" {% if filtros.tempo == 'ate_6_meses' %}selected{% endif %}>1 a 6 meses</option>
+                            <option value="ate_1_ano" {% if filtros.tempo == 'ate_1_ano' %}selected{% endif %}>6 meses a 1 ano</option>
+                            <option value="ate_2_anos" {% if filtros.tempo == 'ate_2_anos' %}selected{% endif %}>1 a 2 anos</option>
+                            <option value="mais_2_anos" {% if filtros.tempo == 'mais_2_anos' %}selected{% endif %}>Mais de 2 anos</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="endereco">Endereço</label>
+                        <select class="form-select form-select-sm" id="endereco" name="endereco">
+                            <option value="">Todos</option>
+                            <option value="com" {% if filtros.endereco == 'com' %}selected{% endif %}>Com endereço</option>
+                            <option value="sem" {% if filtros.endereco == 'sem' %}selected{% endif %}>Sem endereço</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="status">Situação</label>
+                        <select class="form-select form-select-sm" id="status" name="status">
+                            <option value="">Todas</option>
+                            <option value="1" {% if filtros.status == '1' %}selected{% endif %}>Ativos</option>
+                            <option value="0" {% if filtros.status == '0' %}selected{% endif %}>Inativos</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted mb-1" for="ordem">Ordenar por</label>
+                        <select class="form-select form-select-sm" id="ordem" name="ordem">
+                            <option value="recentes" {% if filtros.ordem == 'recentes' or filtros.ordem == '' %}selected{% endif %}>Mais recentes</option>
+                            <option value="antigos" {% if filtros.ordem == 'antigos' %}selected{% endif %}>Mais antigos</option>
+                            <option value="nome" {% if filtros.ordem == 'nome' %}selected{% endif %}>Nome (A-Z)</option>
+                            <option value="cidade" {% if filtros.ordem == 'cidade' %}selected{% endif %}>Cidade</option>
+                            <option value="repetidos" {% if filtros.ordem == 'repetidos' %}selected{% endif %}>Mais repetidos</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="repetidos" name="repetidos"
+                                {% if filtros.repetidos == '1' %}checked{% endif %}>
+                            <label class="form-check-label small" for="repetidos">Só com repetição</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-dark rounded-pill w-100">
+                            <i class="fas fa-filter me-1"></i> Filtrar
+                        </button>
+                        <a href="{{ url('admin/relatorios/usuarios') }}"
+                            class="btn btn-sm btn-outline-secondary rounded-pill" title="Limpar filtros">
+                            <i class="fas fa-eraser"></i>
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <p class="text-muted small mb-3">
+            {% if total > 0 %}
+            Mostrando <strong>{{ primeiro }}</strong> a <strong>{{ ultimo }}</strong> de
+            <strong>{{ total }}</strong> pessoa(s). Duplicados agrupados, administradores fora.
+            {% else %}
+            Nenhuma pessoa encontrada com esses filtros.
+            {% endif %}
+            Gerado em {{ geradoEm }}.
+        </p>
+
+        <!-- ── TABELA ── -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Pessoa</th>
+                                <th>Contato</th>
+                                <th>Endereço</th>
+                                <th>Cadastro</th>
+                                <th>Tempo</th>
+                                <th>Último acesso</th>
+                                <th class="rel-esconde-impressao"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pessoa in pessoas %}
+                            <tr>
+                                <td class="small text-muted">{{ pessoa.id }}</td>
+                                <td>
+                                    <span class="fw-semibold small d-block">{{ pessoa.nome }}</span>
+                                    {% if pessoa.qtd_registros > 1 %}
+                                    <span class="badge bg-warning text-dark" title="Esta pessoa tem mais de um registro no banco">
+                                        <i class="fas fa-clone me-1"></i>{{ pessoa.qtd_registros }} registros
+                                    </span>
+                                    {% endif %}
+                                    {% if pessoa.status != 1 %}
+                                    <span class="badge bg-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">
+                                    <span class="d-block">{{ pessoa.telefone_formatado }}</span>
+                                    <span class="text-muted">{{ pessoa.email }}</span>
+                                    {% if pessoa.cpf_formatado != '--' %}
+                                    <span class="text-muted d-block">CPF {{ pessoa.cpf_formatado }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">
+                                    {% if pessoa.logradouro or pessoa.cep_formatado != '--' %}
+                                    <span class="d-block">{{ pessoa.logradouro|default('--') }}</span>
+                                    <span class="text-muted">
+                                        {% if pessoa.bairro %}{{ pessoa.bairro }} · {% endif %}
+                                        {% if pessoa.cidade %}{{ pessoa.cidade }}/{{ pessoa.estado }} · {% endif %}
+                                        CEP {{ pessoa.cep_formatado }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-danger">Sem endereço</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">{{ pessoa.cadastrado_br }}</td>
+                                <td class="small fw-semibold">{{ pessoa.tempo_cadastro }}</td>
+                                <td class="small text-muted">{{ pessoa.ultimo_acesso_br }}</td>
+                                <td class="text-nowrap rel-esconde-impressao">
+                                    <a href="{{ url('admin/usuarios/visualizar/' ~ pessoa.id) }}" tooltip="tooltip"
+                                        title="Ver ficha completa"><i class="fas fa-eye m-1 text-dark"></i></a>
+                                    <a href="{{ url('admin/usuarios/editar/' ~ pessoa.id) }}" tooltip="tooltip"
+                                        title="Editar"><i class="fas fa-pen m-1 text-primary"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted small py-4">
+                                    <i class="fas fa-folder-open fa-2x d-block mb-2 opacity-50"></i>
+                                    Nenhuma pessoa encontrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PAGINAÇÃO ── -->
+        {% if paginas > 1 %}
+        <nav class="mt-4 rel-esconde-impressao" aria-label="Paginação do relatório">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+                <li class="page-item {% if pagina <= 1 %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="?{{ consulta }}{% if consulta %}&{% endif %}pagina={{ pagina - 1 }}">Anterior</a>
+                </li>
+
+                {% for p in 1..paginas %}
+                {% if p == 1 or p == paginas or (p >= pagina - 2 and p <= pagina + 2) %}
+                <li class="page-item {% if p == pagina %}active{% endif %}">
+                    <a class="page-link" href="?{{ consulta }}{% if consulta %}&{% endif %}pagina={{ p }}">{{ p }}</a>
+                </li>
+                {% elseif p == 2 or p == paginas - 1 %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+                {% endfor %}
+
+                <li class="page-item {% if pagina >= paginas %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="?{{ consulta }}{% if consulta %}&{% endif %}pagina={{ pagina + 1 }}">Próxima</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+
+    </main>
+    {% include 'rodape.html' %}
+</div>
+
+<style>
+    @media print {
+        .sidebar,
+        .rel-esconde-impressao,
+        nav[aria-label="breadcrumb"] {
+            display: none !important;
+        }
+
+        .conteudo {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        table {
+            font-size: 10px;
+        }
+    }
+</style>
+
+{% endblock %}

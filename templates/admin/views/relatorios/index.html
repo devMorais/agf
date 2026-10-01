@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+{% block corpo %}
+
+{% include 'menu.html' %}
+
+<div class="conteudo">
+    {% include 'topo.html' %}
+
+    <main class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold mb-0">Relatórios do Cadastro</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Relatórios</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2 rel-esconde-impressao">
+                <a href="{{ url('admin/relatorios/usuarios') }}" class="btn btn-dark rounded-pill shadow-sm">
+                    <i class="fas fa-table me-2"></i> Relatório completo
+                </a>
+                <a href="{{ url('admin/relatorios/exportar') }}" class="btn btn-success rounded-pill shadow-sm">
+                    <i class="fas fa-file-csv me-2"></i> Baixar CSV
+                </a>
+                <button type="button" class="btn btn-outline-secondary rounded-pill" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        {{ flash() }}
+
+        <p class="text-muted small mb-4">
+            <i class="fas fa-user-check me-1"></i>
+            Cada linha é <strong>uma pessoa</strong>: registros repetidos do mesmo cadastro foram agrupados.
+            Administradores do painel não entram na contagem. Gerado em {{ geradoEm }}.
+        </p>
+
+        <!-- ── NÚMEROS PRINCIPAIS ── -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-dark border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Pessoas cadastradas</small>
+                            <h3 class="fw-bold mb-0">{{ resumo.pessoas|default(0) }}</h3>
+                            <small class="text-muted">{{ resumo.registros|default(0) }} registros no banco</small>
+                        </div>
+                        <i class="fas fa-users fa-2x text-dark opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-warning border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Registros repetidos</small>
+                            <h3 class="fw-bold mb-0">{{ resumo.repetidos|default(0) }}</h3>
+                            <small class="text-muted">{{ resumo.pessoas_repetidas|default(0) }} pessoas com mais de um
+                                cadastro</small>
+                        </div>
+                        <i class="fas fa-clone fa-2x text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-primary border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Tempo médio de cadastro</small>
+                            <h3 class="fw-bold mb-0">{{ tempoMedio }}</h3>
+                            <small class="text-muted">mais antigo: {{ resumo.mais_antigo|default('--')|slice(0, 10) }}</small>
+                        </div>
+                        <i class="fas fa-hourglass-half fa-2x text-primary opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card border-0 shadow-sm p-3 h-100 border-start border-success border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold">Novos em 30 dias</small>
+                            <h3 class="fw-bold mb-0">{{ resumo.novos_30|default(0) }}</h3>
+                            <small class="text-muted">{{ resumo.novos_365|default(0) }} no último ano</small>
+                        </div>
+                        <i class="fas fa-user-plus fa-2x text-success opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <!-- ── CADASTROS POR MÊS ── -->
+            <div class="col-xl-7">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-chart-column me-1"></i> Cadastros por mês (últimos 12 meses)
+                        </h6>
+
+                        {% if porMes is empty %}
+                        <p class="text-muted small mb-0">Nenhum cadastro novo neste período.</p>
+                        {% else %}
+                        <div class="rel-colunas">
+                            {% for linha in porMes %}
+                            <div class="rel-coluna" title="{{ linha.mes }}: {{ linha.total }}">
+                                <span class="rel-coluna-valor">{{ linha.total }}</span>
+                                <div class="rel-coluna-barra" style="height: {{ linha.percentual }}%"></div>
+                                <span class="rel-coluna-rotulo">{{ linha.mes|slice(5, 2) }}/{{ linha.mes|slice(2, 2) }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-3">
+
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">Por ano</h6>
+                        {% for linha in porAno %}
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="small fw-bold" style="width: 50px">{{ linha.ano }}</span>
+                            <div class="rel-barra flex-grow-1">
+                                <div class="rel-barra-preenchida bg-dark" style="width: {{ linha.percentual }}%"></div>
+                            </div>
+                            <span class="small text-muted" style="width: 40px">{{ linha.total }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TEMPO DE CADASTRO ── -->
+            <div class="col-xl-5">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-clock me-1"></i> Há quanto tempo estão cadastrados
+                        </h6>
+
+                        {% for faixa in faixas %}
+                        <a href="{{ url('admin/relatorios/usuarios') }}?tempo={{ faixa.chave }}"
+                            class="text-decoration-none text-reset">
+                            <div class="d-flex justify-content-between align-items-center small mb-1">
+                                <span>{{ faixa.rotulo }}</span>
+                                <span class="fw-bold">{{ faixa.total }} <span
+                                        class="text-muted fw-normal">({{ faixa.percentual }}%)</span></span>
+                            </div>
+                            <div class="rel-barra mb-3">
+                                <div class="rel-barra-preenchida bg-primary" style="width: {{ faixa.percentual }}%"></div>
+                            </div>
+                        </a>
+                        {% endfor %}
+
+                        <hr class="my-3">
+
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-circle-check me-1"></i> Situação
+                        </h6>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Ativos</span>
+                            <span class="fw-bold">{{ resumo.ativos|default(0) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Inativos</span>
+                            <span class="fw-bold">{{ resumo.inativos|default(0) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Já acessaram o site</span>
+                            <span class="fw-bold">{{ resumo.ja_acessaram|default(0) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <!-- ── QUALIDADE DO CADASTRO ── -->
+            <div class="col-xl-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-1">
+                            <i class="fas fa-clipboard-check me-1"></i> Qualidade do cadastro
+                        </h6>
+                        <p class="text-muted small mb-3">Quanto de cada informação está preenchido.</p>
+
+                        {% for item in qualidade %}
+                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                            <span>{{ item.rotulo }}</span>
+                            <span class="fw-bold">
+                                {{ item.percentual }}%
+                                {% if item.faltando > 0 %}
+                                <span class="text-danger fw-normal">({{ item.faltando }} sem)</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="rel-barra mb-3">
+                            <div class="rel-barra-preenchida {% if item.percentual >= 80 %}bg-success{% elseif item.percentual >= 40 %}bg-warning{% else %}bg-danger{% endif %}"
+                                style="width: {{ item.percentual }}%"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ONDE MORAM ── -->
+            <div class="col-xl-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <i class="fas fa-map-location-dot me-1"></i> Onde moram
+                        </h6>
+
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Estado</th>
+                                        <th class="text-end">Pessoas</th>
+                                        <th style="width: 40%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for linha in porEstado %}
+                                    <tr>
+                                        <td class="small">{{ linha.estado }}</td>
+                                        <td class="text-end small fw-bold">{{ linha.total }}</td>
+                                        <td>
+                                            <div class="rel-barra">
+                                                <div class="rel-barra-preenchida bg-secondary"
+                                                    style="width: {{ linha.percentual }}%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if porCidade is not empty %}
+                        <h6 class="fw-bold text-uppercase text-muted small mb-2">Cidades informadas</h6>
+                        <ul class="list-unstyled small mb-0">
+                            {% for linha in porCidade %}
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <span>{{ linha.cidade }} <span class="text-muted">({{ linha.estado }})</span></span>
+                                <span class="fw-bold">{{ linha.total }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── DUPLICADOS ── -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <div>
+                        <h6 class="fw-bold text-uppercase text-muted small mb-1">
+                            <i class="fas fa-clone me-1"></i> Registros repetidos encontrados
+                        </h6>
+                        <p class="text-muted small mb-0">
+                            O relatório já agrupa os repetidos. Esta lista serve para você limpar o banco.
+                        </p>
+                    </div>
+                    <a href="{{ url('admin/relatorios/duplicados') }}" class="btn btn-sm btn-outline-dark rounded-pill">
+                        Ver e resolver <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+
+                <div class="row g-2">
+                    {% set rotulos = {'pessoa': 'Mesma pessoa (nome + telefone)', 'telefone': 'Mesmo telefone', 'nome': 'Mesmo nome', 'cpf': 'Mesmo CPF', 'email': 'Mesmo e-mail'} %}
+                    {% for chave, dados in duplicados %}
+                    <div class="col-6 col-lg">
+                        <a href="{{ url('admin/relatorios/duplicados') }}?criterio={{ chave }}"
+                            class="text-decoration-none text-reset">
+                            <div class="border rounded-3 p-3 h-100 {% if dados.excedentes > 0 %}border-warning bg-warning bg-opacity-10{% endif %}">
+                                <small class="text-muted d-block">{{ rotulos[chave] }}</small>
+                                <span class="fs-4 fw-bold">{{ dados.excedentes }}</span>
+                                <small class="text-muted d-block">em {{ dados.grupos }} grupo(s)</small>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ── ÚLTIMOS CADASTROS ── -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-uppercase text-muted small mb-0">
+                        <i class="fas fa-user-clock me-1"></i> Últimos cadastros
+                    </h6>
+                    <a href="{{ url('admin/relatorios/usuarios') }}" class="small text-decoration-none">Ver todos</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>Endereço</th>
+                                <th>Cadastrado</th>
+                                <th>Tempo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pessoa in ultimas %}
+                            <tr>
+                                <td class="small">
+                                    <a href="{{ url('admin/usuarios/visualizar/' ~ pessoa.id) }}"
+                                        class="text-decoration-none fw-semibold">{{ pessoa.nome }}</a>
+                                </td>
+                                <td class="small">{{ pessoa.telefone_formatado }}</td>
+                                <td class="small text-muted">
+                                    {{ pessoa.logradouro|default('--') }}
+                                    {% if pessoa.cidade %} — {{ pessoa.cidade }}/{{ pessoa.estado }}{% endif %}
+                                </td>
+                                <td class="small">{{ pessoa.cadastrado_br }}</td>
+                                <td class="small">{{ pessoa.tempo_cadastro }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted small py-3">Nenhum cadastro encontrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    {% include 'rodape.html' %}
+</div>
+
+<style>
+    /* Barra horizontal simples usada nos gráficos */
+    .rel-barra {
+        background: #edf2f7;
+        border-radius: 20px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .rel-barra-preenchida {
+        height: 100%;
+        border-radius: 20px;
+        transition: width .4s ease;
+    }
+
+    /* Colunas de cadastros por mês */
+    .rel-colunas {
+        display: flex;
+        align-items: flex-end;
+        gap: .35rem;
+        height: 170px;
+    }
+
+    .rel-coluna {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+        gap: .25rem;
+    }
+
+    .rel-coluna-barra {
+        width: 100%;
+        min-height: 3px;
+        background: linear-gradient(180deg, #ed583f, #d94a34);
+        border-radius: 6px 6px 0 0;
+    }
+
+    .rel-coluna-valor,
+    .rel-coluna-rotulo {
+        font-size: .68rem;
+        color: #64748b;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    @media print {
+        .sidebar,
+        .rel-esconde-impressao,
+        nav[aria-label="breadcrumb"] {
+            display: none !important;
+        }
+
+        .conteudo {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .card {
+            break-inside: avoid;
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+
+{% endblock %}
